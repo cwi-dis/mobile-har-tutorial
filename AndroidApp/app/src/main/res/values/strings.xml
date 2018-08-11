@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Activity Recognition</string>
+    <string name="activity">Activity</string>
+    <string name="probability">Probability</string>
+
+    <string name="walkForward">Walk Forward</string>
+    <string name="walkLeft">Walk Left</string>
+    <string name="walkRight">Walk Right</string>
+    <string name="walkUp">Walk Up</string>
+    <string name="walkDown">Walk Down</string>
+    <string name="runForward">Run Forward</string>
+    <string name="jumpUp">Jump Up</string>
+    <string name="sit">Sit</string>
+    <string name="stand">Stand</string>
+    <string name="sleep">Sleep</string>
+    <string name="elevatorUp">Elevator Up</string>
+    <string name="elevatorDown">Elevator Down</string>
+
+
+
+</resources>
