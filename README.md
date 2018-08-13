@@ -1,6 +1,8 @@
 
 # MobileHCI 2018 tutorial: Machine Learning for Intelligent Mobile User Interfaces using Keras
 
+### Setup: dependecies, versions, getting data
+
 
 ```python
 # -*- coding: utf-8 -*-
@@ -49,8 +51,8 @@ K.clear_session()
 
 ```python
 # LConvert notebook to a README for GitHub repo's main page
-!jupyter nbconvert --to markdown Keras_HAR_UCD.ipynb
-!mv Keras_HAR_UCD.md README.md
+!jupyter nbconvert --to markdown mobilehci2018_keras_har_tutorial.ipynb
+!mv mobil.md README.md
 ```
 
     [NbConvertApp] Converting notebook Keras_HAR_UCD.ipynb to markdown
@@ -71,7 +73,7 @@ K.clear_session()
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Writing 57694 bytes to Keras_HAR_UCD.md
+    [NbConvertApp] Writing 57665 bytes to Keras_HAR_UCD.md
 
 
 
@@ -110,28 +112,32 @@ with zipfile.ZipFile("./data/mobilehci2018_tutorial_data.zip","r") as zipref:
 os.remove("./data/mobilehci2018_tutorial_data.zip")
 ```
 
+### Preprocressing
+
 
 ```python
-# setting up a random seed for reproducibility
+## setting up a random seed for reproducibility
 random_seed = 611
 np.random.seed(random_seed)
 
-# matplotlib inline
+## matplotlib inline
 plt.style.use('ggplot')
-# defining function for loading the dataset
 
+## defining function for loading our dataset
 def readData(filePath):
     # attributes of the dataset
     columnNames = ['user_id','activity','timestamp','x-axis','y-axis','z-axis']
     data = pd.read_csv(filePath,header = None, names=columnNames,na_values=';')
     return data[0:2000]
-# defining a function for feature normalization
-# (feature - mean)/stdiv
+
+## defining a function for feature normalization
+## (feature - mean)/stdiv
 def featureNormalize(dataset):
     mu = np.mean(dataset,axis=0)
     sigma = np.std(dataset,axis=0)
     return (dataset-mu)/sigma
-# defining the function to plot a single axis data
+
+## defining the function to plot a single axis data
 def plotAxis(axis,x,y,title):
     axis.plot(x,y)
     axis.set_title(title)
@@ -139,7 +145,8 @@ def plotAxis(axis,x,y,title):
     axis.set_ylim([min(y)-np.std(y),max(y)+np.std(y)])
     axis.set_xlim([min(x),max(x)])
     axis.grid(True)
-# defining a function to plot the data for a given activity
+
+## defining a function to plot the data for a given activity
 def plotActivity(activity,data):
     fig,(ax0,ax1,ax2) = plt.subplots(nrows=3, figsize=(15,10),sharex=True)
     plotAxis(ax0,data['timestamp'],data['x-axis'],'x-axis')
@@ -149,35 +156,19 @@ def plotActivity(activity,data):
     fig.suptitle(activity)
     plt.subplots_adjust(top=0.9)
     plt.show()
+
 # defining a window function for segmentation purposes
 def windows(data,size):
     start = 0
     while start< data.count():
         yield int(start), int(start + size)
-        start+= (size/2)
+        start+= (size/2)    
         
-        
-# # segmenting the time series
-# def segment_signal(data, window_size = 90):
-#     segments = np.empty((0,window_size,3))
-#     labels= np.empty((0))
-#     for (start, end) in windows(data['timestamp'],window_size):
-#         x = data['x-axis'][start:end]
-#         y = data['y-axis'][start:end]
-#         z = data['z-axis'][start:end]
-#         if(len(data['timestamp'][start:end])==window_size):
-#             segments = np.vstack([segments,np.dstack([x,y,z])])
-#             labels = np.append(labels,stats.mode(data['activity'][start:end])[0][0])
-#     return segments, labels
-
-# segmenting the time series
-
-# acc_x	acc_y	acc_z	gyr_x	gyr_y	gyr_z	
-
 def segment_signal_ucd(data, window_size = 90):
     segments = np.empty((0,window_size,6))
     labels= np.empty((0))
-#     print labels
+
+## print labels
     for (start, end) in windows(data['activity'],window_size):
         x = data['acc_x'][start:end]
         y = data['acc_y'][start:end]
@@ -195,6 +186,9 @@ def segment_signal_ucd(data, window_size = 90):
 
 
 ```python
+
+## read in the USC-HAD data
+
 DIR = './data/USC-HAD/data/'
 
 # activity = []
@@ -204,12 +198,10 @@ act_num = []
 sensor_readings = []
 
 def read_dir(directory):
-
     for path, subdirs, files in os.walk(DIR):
         for name in files:
             if name.endswith('.mat'):
                 mat = scipy.io.loadmat(os.path.join(path, name))
-
 #                 activity.append(mat['activity'])
 #                 subject.extend(mat['subject'])
 #                 age.extend(mat['age'])
@@ -217,29 +209,13 @@ def read_dir(directory):
 
                 if mat.get('activity_number') is None:
                     act_num.append('11')
-                    
                 else:
                     act_num.append(mat['activity_number'])
     return act_num, sensor_readings
-# handle corrupt datapoint
+
+# UNCOMMENT to handle corrupt datapoint
 # act_num[258] = '11'            
 act_num, sensor_readings = read_dir(DIR)
-```
-
-
-```python
-# 1. Walking Forward
-# 2. Walking Left
-# 3. Walking Right
-# 4. Walking Upstairs
-# 5. Walking Downstairs
-# 6. Running Forward
-# 7. Jumping Up
-# 8. Sitting
-# 9. Standing
-# 10. Sleeping
-# 11. Elevator Up
-# 12. Elevator Down
 ```
 
 
@@ -285,8 +261,7 @@ df.loc[df['activity'] == '10', 'activity'] = 'Sleeping'
 df.loc[df['activity'] == '11', 'activity'] = 'Elevator Up'
 df.loc[df['activity'] == '12', 'activity'] = 'Elevator Down'
 
-df['activity'].unique()
-
+df['activity'].unique() ### The 12 classes we want to recognize!
 ```
 
 
@@ -636,51 +611,51 @@ plot_datasets(df)
 ```
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_0.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_1.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_2.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_3.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_4.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_5.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_6.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_7.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_8.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_9.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_10.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_11.png)
 
 
 
@@ -690,7 +665,7 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_18_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_19_0.png)
 
 
 
@@ -1062,7 +1037,7 @@ print model.summary()
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_28_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_29_1.png)
 
 
 
@@ -1113,11 +1088,11 @@ plt.show()
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_29_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_29_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_2.png)
 
 
 
