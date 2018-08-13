@@ -1,6 +1,11 @@
 
 
 ```python
+# MobileHCI 2018 tutorial: Machine Learning for Intelligent Mobile User Interfaces using Keras.
+```
+
+
+```python
 # -*- coding: utf-8 -*-
 
 ## By Abdallah El Ali
@@ -46,10 +51,31 @@ K.clear_session()
 
 
 ```python
-# LConvert notebook to a README for the GitHub repo's main page
-!jupyter nbconvert --to markdown Keras-HAR-UCD.ipynb
+# LConvert notebook to a README for GitHub repo's main page
+!jupyter nbconvert --to markdown Keras_HAR_UCD.ipynb
 !mv Keras_HAR_UCD.md README.md
 ```
+
+    [NbConvertApp] Converting notebook Keras_HAR_UCD.ipynb to markdown
+    [NbConvertApp] Support files will be in Keras_HAR_UCD_files/
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Making directory Keras_HAR_UCD_files
+    [NbConvertApp] Writing 86894 bytes to Keras_HAR_UCD.md
+
 
 
 ```python
@@ -71,9 +97,8 @@ K.clear_session()
 
 
 ```python
+## unzip and delete files
 
-# filename = "data/mobilehci2018_tutorial_data.zip"
-# dir = "./data/"
 with zipfile.ZipFile("./data/mobilehci2018_tutorial_data.zip","r") as zipref:
     zipref.extractall("./data/")
 os.remove("./data/mobilehci2018_tutorial_data.zip")
@@ -605,51 +630,51 @@ plot_datasets(df)
 ```
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_0.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_0.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_1.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_1.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_2.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_2.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_3.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_3.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_4.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_4.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_5.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_5.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_6.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_6.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_7.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_7.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_8.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_8.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_9.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_9.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_10.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_10.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_15_11.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_11.png)
 
 
 
@@ -659,7 +684,7 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_16_0.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_17_0.png)
 
 
 
@@ -1031,7 +1056,7 @@ print model.summary()
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_26_1.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_27_1.png)
 
 
 
@@ -1082,11 +1107,11 @@ plt.show()
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_27_1.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_28_1.png)
 
 
 
-![png](Keras_HAR_UCD_files/Keras_HAR_UCD_27_2.png)
+![png](Keras_HAR_UCD_files/Keras_HAR_UCD_28_2.png)
 
 
 
