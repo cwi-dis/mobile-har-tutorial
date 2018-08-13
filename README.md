@@ -71,7 +71,7 @@ K.clear_session()
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Writing 88035 bytes to Keras_HAR_UCD.md
+    [NbConvertApp] Writing 57694 bytes to Keras_HAR_UCD.md
 
 
 
@@ -1131,7 +1131,7 @@ print history.model.evaluate(testX,testY,verbose=3)
     [1.8351253166976615, 0.35781952472703915]
 
 
-## How to freeze Keras models and inspecting their tf graph structure
+## Freeze and inspect Keras model graphs
 
 
 ```python
