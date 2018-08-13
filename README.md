@@ -1,7 +1,5 @@
 
-# MobileHCI 2018 Human Activity Recognition tutorial
-
-## Machine Learning for Intelligent Mobile User Interfaces using Keras.
+# MobileHCI 2018 tutorial: Machine Learning for Intelligent Mobile User Interfaces using Keras
 
 
 ```python
@@ -73,7 +71,7 @@ K.clear_session()
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
     [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Writing 88051 bytes to Keras_HAR_UCD.md
+    [NbConvertApp] Writing 88066 bytes to Keras_HAR_UCD.md
 
 
 
