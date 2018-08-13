@@ -71,9 +71,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 57528 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 65715 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -1137,7 +1135,7 @@ print history.model.evaluate(testX,testY,verbose=3)
     [1.8351253166976615, 0.35781952472703915]
 
 
-## Freeze and inspect Keras model graphs
+### Freeze and inspect Keras model graphs
 
 
 ```python
@@ -1378,7 +1376,7 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
     INFO:tensorflow:Converted 10 variables to const ops.
 
 
-## Inspect graphs with TensorBoard 
+### Inspect graphs with TensorBoard 
 
 
 ```python
