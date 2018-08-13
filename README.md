@@ -1,7 +1,7 @@
 
 # MobileHCI 2018 tutorial: Machine Learning for Intelligent Mobile User Interfaces using Keras
 
-### Setup: dependecies, versions, getting data
+### Setup: dependencies, versions, getting data
 
 
 ```python
@@ -50,40 +50,105 @@ K.clear_session()
 
 
 ```python
-# LConvert notebook to a README for GitHub repo's main page
+## Convert Jupyter notebook to a README for GitHub repo's main page
 !jupyter nbconvert --to markdown mobilehci2018_keras_har_tutorial.ipynb
-!mv mobil.md README.md
+!mv mobilehci2018_keras_har_tutorial.md README.md
 ```
 
-    [NbConvertApp] Converting notebook Keras_HAR_UCD.ipynb to markdown
-    [NbConvertApp] Support files will be in Keras_HAR_UCD_files/
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Making directory Keras_HAR_UCD_files
-    [NbConvertApp] Writing 57665 bytes to Keras_HAR_UCD.md
+    [NbConvertApp] Converting notebook mobilehci2018_keras_har_tutorial.ipynb to markdown
+    [NbConvertApp] Support files will be in mobilehci2018_keras_har_tutorial_files/
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Writing 57528 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
 ```python
-# Check tensorflow version
+## Check tensorflow version
 !python -c 'import tensorflow as tf; print(tf.__version__)'  # for Python 2
 
 # gradle TF build repo
 # https://mvnrepository.com/artifact/org.tensorflow/tensorflow-android/1.5.0-rc1
 ```
+
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._conv import register_converters as _register_converters
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+      from ._conv import register_converters as _register_converters
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:45: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import h5a, h5d, h5ds, h5f, h5fd, h5g, h5r, h5s, h5t, h5p, h5z
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/_hl/group.py:22: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .. import h5g, h5i, h5o, h5r, h5t, h5l, h5p
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/lil.py:19: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _csparsetools
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:165: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._shortest_path import shortest_path, floyd_warshall, dijkstra,\
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/_validation.py:5: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._tools import csgraph_to_dense, csgraph_from_dense,\
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:167: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._traversal import breadth_first_order, depth_first_order, \
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:169: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._min_spanning_tree import minimum_spanning_tree
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:170: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._reordering import reverse_cuthill_mckee, maximum_bipartite_matching, \
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/linalg/basic.py:17: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._solve_toeplitz import levinson
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/linalg/__init__.py:207: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._decomp_update import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/special/__init__.py:640: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._ufuncs import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/special/_ellip_harm.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._ellip_harm_2 import _ellipsoid, _ellipsoid_norm
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/interpolate/_bsplines.py:10: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _bspl
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/__init__.py:95: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .ckdtree import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/__init__.py:96: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .qhull import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/_spherical_voronoi.py:18: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _voronoi
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/distance.py:122: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _hausdorff
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/ndimage/measurements.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _ni_label
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/_libs/__init__.py:3: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .tslib import iNaT, NaT, Timestamp, Timedelta, OutOfBoundsDatetime
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/__init__.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import (hashtable as _hashtable,
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/dtypes/common.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import algos, lib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/util/hashing.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import hashing, tslib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/indexes/base.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import (lib, index as libindex, tslib as libts,
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/indexes/datetimelike.py:28: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs.period import Period
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/sparse/array.py:32: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.sparse as splib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/window.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.window as _window
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/groupby.py:66: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import lib, groupby as libgroupby, Timestamp, NaT, iNaT
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/reshape/reshape.py:30: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import algos as _algos, reshape as _reshape
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/io/parsers.py:43: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.parsers as parsers
+    1.9.0
+
 
 
 ```python
@@ -93,20 +158,22 @@ K.clear_session()
 !wget -P ./data "http://abdoelali.com/data/mobilehci2018_tutorial_data.zip"
 ```
 
-    --2018-08-13 12:28:53--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
+    --2018-08-13 17:26:04--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
     Resolving abdoelali.com (abdoelali.com)... 160.153.1.1
     Connecting to abdoelali.com (abdoelali.com)|160.153.1.1|:80... connected.
     HTTP request sent, awaiting response... 200 OK
     Length: 298100126 (284M) [application/zip]
     Saving to: ‘./data/mobilehci2018_tutorial_data.zip’
     
-    18_tutorial_data.zi  13%[=>                    ]  38.31M  3.05MB/s   eta 74s   ^C
+    mobilehci2018_tutor 100%[=====================>] 284.29M   310KB/s   in 18m 27ss
+    
+    2018-08-13 17:44:32 (263 KB/s) - ‘./data/mobilehci2018_tutorial_data.zip’ saved [298100126/298100126]
+    
 
 
 
 ```python
 ## unzip and delete files
-
 with zipfile.ZipFile("./data/mobilehci2018_tutorial_data.zip","r") as zipref:
     zipref.extractall("./data/")
 os.remove("./data/mobilehci2018_tutorial_data.zip")
@@ -157,18 +224,19 @@ def plotActivity(activity,data):
     plt.subplots_adjust(top=0.9)
     plt.show()
 
-# defining a window function for segmentation purposes
+## defining a window function for segmentation purposes
 def windows(data,size):
     start = 0
     while start< data.count():
         yield int(start), int(start + size)
         start+= (size/2)    
-        
+
+## our segmenrtation function to get streams of 90 samples in each timestep 
 def segment_signal_ucd(data, window_size = 90):
     segments = np.empty((0,window_size,6))
     labels= np.empty((0))
-
 ## print labels
+
     for (start, end) in windows(data['activity'],window_size):
         x = data['acc_x'][start:end]
         y = data['acc_y'][start:end]
@@ -186,9 +254,7 @@ def segment_signal_ucd(data, window_size = 90):
 
 
 ```python
-
 ## read in the USC-HAD data
-
 DIR = './data/USC-HAD/data/'
 
 # activity = []
@@ -213,15 +279,14 @@ def read_dir(directory):
                     act_num.append(mat['activity_number'])
     return act_num, sensor_readings
 
-# UNCOMMENT to handle corrupt datapoint
+## UNCOMMENT to handle corrupt datapoint
 # act_num[258] = '11'            
 act_num, sensor_readings = read_dir(DIR)
 ```
 
 
 ```python
-# Get acc + gyr sensor readings and put in df
-
+## Get acc + gyr sensor readings and put in df (dataframe)
 acc_x = []
 acc_y = []
 acc_z = []
@@ -243,9 +308,7 @@ for i in range(840):
         gyr_z.append(j[5]) # gyr_z
         act_label.append(act_num[i])
         
-
-df = pd.DataFrame({'acc_x':acc_x,'acc_y':acc_y,'acc_z':acc_z,'gyr_x':gyr_x,'gyr_y':gyr_y,'gyr_z':gyr_z,'activity':act_label})
-                           
+df = pd.DataFrame({'acc_x':acc_x,'acc_y':acc_y,'acc_z':acc_z,'gyr_x':gyr_x,'gyr_y':gyr_y,'gyr_z':gyr_z,'activity':act_label})                   
 df = df[['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z','activity']]
 
 df.loc[df['activity'] == '1', 'activity'] = 'Walking Forward'
@@ -261,17 +324,14 @@ df.loc[df['activity'] == '10', 'activity'] = 'Sleeping'
 df.loc[df['activity'] == '11', 'activity'] = 'Elevator Up'
 df.loc[df['activity'] == '12', 'activity'] = 'Elevator Down'
 
-df['activity'].unique() ### The 12 classes we want to recognize!
+## These are the 12 classes we want to recognize!
+df['activity'].unique() 
+
+## print size of dataset
+print 'df size ' + str(len(df))
 ```
 
-
-
-
-    array(['Sleeping', 'Sitting', 'Elevator Down', 'Elevator Up', 'Standing',
-           'Jumping Up', 'Walking Downstairs', 'Walking Right',
-           'Walking Forward', 'Running Forward', 'Walking Upstairs',
-           'Walking Left'], dtype=object)
-
+    df size 2811490
 
 
 
@@ -288,118 +348,7 @@ df['activity'].unique() ### The 12 classes we want to recognize!
 
 
 ```python
-
-print 'df size ' + str(len(df))
-
-```
-
-    df size 2811490
-
-
-
-```python
-# dataset = readData('./data/actitracker_raw.txt')
-# plotting a subset of the data to visualize
-# for activity in np.unique(dataset['activity']):
-#     subset = dataset[dataset['activity']==activity][:180]
-#     plotActivity(activity,subset)
-
-
-# UNCOMMENT for segmenting the signal in overlapping windows of 90 samples with 50% overlap
-
-# segments, labels = segment_signal_ucd(df)
-
-# COMMENT if you want to segment afresh. 
-
-#open a file, where you stored the pickled data
-segments = open('./data/segments_90.p', 'rb')
-labels = open('./data/labels_90.p','rb')
-# dump information to that file
-segments = pickle.load(segments)
-labels = pickle.load(labels)
-
-# pickle.dump(segments, open( "./data/segments_90.p","wb"))
-# pickle.dump(labels, open( "./data/labels_90.p","wb"))
-
-#categorically defining the classes of the activities
-labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
-
-# defining parameters for the input and network layers
-# we are treating each segmeent or chunk as a 2D image (90 X 3)
-numOfRows = segments.shape[1]
-numOfColumns = segments.shape[2]
-numChannels = 1
-numFilters = 128 # number of filters in Conv2D layer
-# kernal size of the Conv2D layer
-kernalSize1 = 2
-# max pooling window size
-poolingWindowSz = 2
-# number of filters in fully connected layers
-numNueronsFCL1 = 128
-numNueronsFCL2 = 128
-# split ratio for test and validation
-trainSplitRatio = 0.8
-# number of epochs
-Epochs = 1
-# batchsize
-batchSize = 10
-
-# number of total clases
-numClasses = labels.shape[1]
-print labels.shape
-
-print numClasses
-# dropout ratio for dropout layer
-dropOutRatio = 0.2
-# reshaping the data for network input
-reshapedSegments = segments.reshape(segments.shape[0], numOfRows, numOfColumns,1)
-# splitting in training and testing data
-trainSplit = np.random.rand(len(reshapedSegments)) < trainSplitRatio
-trainX = reshapedSegments[trainSplit]
-testX = reshapedSegments[~trainSplit]
-trainX = np.nan_to_num(trainX)
-testX = np.nan_to_num(testX)
-trainY = labels[trainSplit]
-testY = labels[~trainSplit]
-
-print "segments shape:" + str(segments.shape)
-print "labels shape:" + str(labels.shape)
-print "trainX shape: " + str(trainX.shape)
-print "trainY shape: " + str(trainY.shape)
-print "testX shape: " + str(testX.shape)
-print "testY shape: " + str(testY.shape)
-
-# (observations, timesteps, features (x,y,z), channels)
-```
-
-    (62476, 12)
-    12
-    segments shape:(62476, 90, 6)
-    labels shape:(62476, 12)
-    trainX shape: (49973, 90, 6, 1)
-    trainY shape: (49973, 12)
-    testX shape: (12503, 90, 6, 1)
-    testY shape: (12503, 12)
-
-
-
-```python
-# k = []
-
-# for i in range(len(labels)):
-#     if labels[i][0] == 1: 
-#         k.append(labels[i])
-# print len(k)
-
-# print labels.shape
-```
-
-    3674
-    (62476, 12)
-
-
-
-```python
+## inspect the dataframe
 df[1:10]
 ```
 
@@ -532,14 +481,6 @@ df[1:10]
 
 
 ```python
-print testX.shape
-```
-
-    (12467, 90, 6, 1)
-
-
-
-```python
 # sanity check
 
 print min(df['acc_x'])
@@ -565,10 +506,14 @@ print max(df['gyr_z'])
     816.5776977539062
 
 
+### Explore your dataset (through visualization)
+
 
 ```python
+## setup a plots dir
 plot_dir = './plots/'
 
+## two functions below to plot your data, and save them to disk
 def plot_activity(activity, df,i=0, j=100):
     data = df[df['activity'] == activity][['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']][i:j]
     axis = data.plot(subplots=True, figsize=(16, 6), 
@@ -595,7 +540,7 @@ def plot_datasets(df,i=0,j=1000):
     plot_activity("Elevator Up", df,i,j)
     plot_activity("Elevator Down", df,i,j)
 
-
+## in case you have collapsed categories
 # def plot_datasets2(df,i=1000):
 #     plot_activity("Walking", df,i)
 #     plot_activity("Running", df,i)
@@ -611,66 +556,67 @@ plot_datasets(df)
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_0.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_6.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_8.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_10.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
 
 
 
 ```python
+## check class districtions, and save fig to disk
 df['activity'].value_counts().plot(kind='bar', title='Plotting records by activity type', figsize=(10, 4),align='center');
 plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_19_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
 
 
 
 ```python
-df['activity'].value_counts()
+print df['activity'].value_counts()
 ```
 
 
@@ -692,6 +638,104 @@ df['activity'].value_counts()
 
 
 
+### Config your ConvLSTM
+
+
+```python
+
+## UNCOMMENT for segmenting the signal in overlapping windows of 90 samples with 50% overlap
+# segments, labels = segment_signal_ucd(df)
+
+## COMMENT below segments + labels files if you want to segment afresh 
+
+## open a file, where you stored the pickled data
+segments = open('./data/segments_90.p', 'rb')
+labels = open('./data/labels_90.p','rb')
+segments = pickle.load(segments)
+labels = pickle.load(labels)
+
+## dump information to that file (UNCOMMENT to save fresh segmentation!)
+# pickle.dump(segments, open( "./data/segments_90.p","wb"))
+# pickle.dump(labels, open( "./data/labels_90.p","wb"))
+
+## categorically defining the classes of the activities
+labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
+
+## defining parameters for the input and network layers
+## we are treating each segmeent or chunk as a 2D image (90 X 3)
+numOfRows = segments.shape[1]
+numOfColumns = segments.shape[2]
+numChannels = 1
+numFilters = 128 # number of filters in Conv2D layer
+
+## kernal size of the Conv2D layer
+kernalSize1 = 2
+
+## max pooling window size
+poolingWindowSz = 2
+
+## number of filters in fully connected layers
+numNueronsFCL1 = 128
+numNueronsFCL2 = 128
+
+## split ratio for test and validation
+trainSplitRatio = 0.8
+
+## number of epochs 
+Epochs = 20
+
+## batchsize
+batchSize = 10
+
+## number of total clases
+numClasses = labels.shape[1]
+print labels.shape
+print numClasses
+
+## dropout ratio for dropout layer
+dropOutRatio = 0.2
+
+## reshaping the data for network input
+reshapedSegments = segments.reshape(segments.shape[0], numOfRows, numOfColumns,1)
+
+## splitting in training and testing data
+trainSplit = np.random.rand(len(reshapedSegments)) < trainSplitRatio
+trainX = reshapedSegments[trainSplit]
+testX = reshapedSegments[~trainSplit]
+trainX = np.nan_to_num(trainX)
+testX = np.nan_to_num(testX)
+trainY = labels[trainSplit]
+testY = labels[~trainSplit]
+
+print "segments shape:" + str(segments.shape)
+print "labels shape:" + str(labels.shape)
+print "trainX shape: " + str(trainX.shape)
+print "trainY shape: " + str(trainY.shape)
+print "testX shape: " + str(testX.shape)
+print "testY shape: " + str(testY.shape)
+
+## (observations, timesteps, features (x,y,z), channels)
+
+# k = []
+
+# for i in range(len(labels)):
+#     if labels[i][0] == 1: 
+#         k.append(labels[i])
+# print len(k)
+
+# print labels.shape
+```
+
+    (62476, 12)
+    12
+    segments shape:(62476, 90, 6)
+    labels shape:(62476, 12)
+    trainX shape: (50009, 90, 6, 1)
+    trainY shape: (50009, 12)
+    testX shape: (12467, 90, 6, 1)
+    testY shape: (12467, 12)
+
+
 
 ```python
 print "segments shape:" + str(segments.shape)
@@ -704,17 +748,18 @@ print "\n"
 print "Rows / Timesteps: " + str(numOfRows)
 print "Columns / features: " + str(numOfColumns)
 
-# Conv2D: (observations, timesteps, features (acc + gyro), channels)
-# LSTM: (batch size, observations, timesteps, features (acc + gyro), channels)
+## key:
+## Conv2D: (observations, timesteps, features (acc + gyro), channels)
+## LSTM: (batch size, observations, timesteps, features (acc + gyro), channels)
 
 ```
 
     segments shape:(62476, 90, 6)
     labels shape:(62476, 12)
-    trainX shape: (49953, 90, 6, 1)
-    trainY shape: (49953, 12)
-    testX shape: (12523, 90, 6, 1)
-    testY shape: (12523, 12)
+    trainX shape: (50009, 90, 6, 1)
+    trainY shape: (50009, 12)
+    testX shape: (12467, 90, 6, 1)
+    testY shape: (12467, 12)
     
     
     Rows / Timesteps: 90
@@ -723,21 +768,21 @@ print "Columns / features: " + str(numOfColumns)
 
 
 ```python
-print testX[1][1] # shape of data to feed frozen model later
+## shape of data to feed frozen model later in Android code
+print testX[1][1] 
 ```
 
-    [[  0.23222113]
-     [  0.15453091]
-     [ -0.21525715]
-     [ 56.64781952]
-     [-29.01465416]
-     [-17.79100418]]
+    [[  1.27952909]
+     [  0.38253674]
+     [ -0.34336254]
+     [ 29.65807343]
+     [  7.24022865]
+     [-16.17967606]]
 
 
 
 ```python
-# test reshape for ConvLSTM
-
+## test reshape for ConvLSTM
 print np.expand_dims(testY,1).shape
 print trainX.shape
 
@@ -759,53 +804,46 @@ def Conv2D_LSTM_Model():
     print (model.output_shape)
     print (model.name)
     
-
-    # adding a maxpooling layer
+    ## adding a maxpooling layer
     model.add(TimeDistributed(MaxPooling2D(pool_size=(poolingWindowSz,poolingWindowSz),padding='valid')))
     print (model.output_shape)
 
-    # adding a dropout layer for the regularization and avoiding over fitting
+    ## adding a dropout layer for the regularization and avoiding over fitting
     model.add(Dropout(dropOutRatio))
     print (model.output_shape)
     
-    # flattening the output in order to apply the fully connected layer
+    ## flattening the output in order to apple dense layer
     model.add(TimeDistributed(Flatten()))
     print (model.output_shape)
     
-    # adding first fully connected layer with 256 outputs
+    ## adding first fully connected layer with 256 outputs
     model.add(Dense(numNueronsFCL1, activation='relu'))
     print (model.output_shape)
 
-    #adding second fully connected layer 128 outputs
+    ## adding second fully connected layer 128 outputs
     model.add(Dense(numNueronsFCL2, activation='relu'))
     print (model.output_shape)
 
+    ## flattening the output in order to apply the fully connected layer
     model.add(TimeDistributed(Flatten()))
     print (model.output_shape)
 
-    # adding softmax layer for the classification
+    ## adding softmax layer for the classification
     model.add(Dense(numClasses, activation='softmax', name="OUTPUT"))
     print (model.output_shape)
     print (model.name)
 
-    # Compiling the model to generate a model
+    ## Compiling the model to generate a model
     adam = optimizers.Adam(lr = 0.001, decay=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     return model
 ```
 
-
-```python
-print (model.input_shape)
-```
-
-    (None, 90, 6, 1)
-
+### Train your network
 
 
 ```python
-# Train the network!
-
+## Train the network!
 tf.get_default_graph()
 
 model = Conv2D_LSTM_Model()
@@ -817,14 +855,13 @@ score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2
 print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 print('Baseline ConvLSTM Error: %.2f%%' %(100-score[1]*100))
 
-# Save your model!
-
+## Save your model!
 model.save('model_hcd_test.h5')
 model.save_weights('model_weights_test.h5')
 # np.save('groundTruth_test_lstm.npy',np.expand_dims(testY,1))
 # np.save('testData_test_lstm.npy',np.expand_dims(testX,1))
 
-
+## write to JSON, in case you wanrt to work with that data format later when inspecting your model
 with open("./data/model_hcd_test.json", "w") as json_file:
   json_file.write(model.to_json())
 
@@ -859,9 +896,8 @@ with open("./data/model_hcd_test.json", "w") as json_file:
 
 
 ```python
-
 print model.name
-
+print (model.input_shape)
 ```
 
 
@@ -873,23 +909,23 @@ print model.name
 # testY = np.expand_dims(testY,0)
 ```
 
+### Evaluate model, and plot confusion matrix + acc/loss graphs
+
 
 ```python
 # %%pixie_debugger
 # -*- coding: utf-8 -*-
 """
-Evaluate a pretrained model saved as model.h5 using 'testData.npy'
-and 'groundTruth.npy'. Reporterror as the cross entropy loss in percentage and also generated a png file for the confusion matrix.
+Evaluate a pretrained model saved as *.h5 using 'testData_X.npy'
+and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentag. Also generates a png file for the confusion matrix.
 Based on work by Muhammad Shahnawaz
 """
-
 import matplotlib
 
-# importing the dependencies
+## importing the dependencies
 from keras.models import load_model, Sequential
 from keras import optimizers
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
-
 import numpy as np
 from sklearn import metrics
 import os
@@ -897,29 +933,27 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm
 
-
-# defining a function for plotting the confusion matrix
-# takes cmNormalized
+## defining a function for plotting the confusion matrix
+## takes cmNormalized
 os.environ['QT_PLUGIN_PATH'] = ''
 def plot_cm(cM, labels,title):
-    # normalizing the confusionMatrix for showing the probabilities
+    ## normalizing the confusionMatrix for showing the probabilities
     cmNormalized = np.around((cM/cM.astype(np.float).sum(axis=1)[:,None])*100,2)
-
-    # creating a figure object
+    ## creating a figure object
     fig = plt.figure()
-    # plotting the confusion matrix
+    ## plotting the confusion matrix
     plt.imshow(cmNormalized,interpolation=None,cmap = plt.cm.Blues)
-    # creating a color bar and setting the limits
+    ## creating a color bar and setting the limits
     plt.colorbar()
     plt.clim(0,100)
-    # assiging the title, x and y labels
+    ## assiging the title, x and y labels
     plt.xlabel('Predicted Values')
     plt.ylabel('Ground Truth')
     plt.title(title + '\n%age confidence')
-    # defining the ticks for the x and y axis
+    ## defining the ticks for the x and y axis
     plt.xticks(range(len(labels)),labels,rotation = 60)
     plt.yticks(range(len(labels)),labels)
-    # number of occurences in the boxes
+    ## number of occurences in the boxes
     width, height = cM.shape
     print('Accuracy for each class is given below.')
     for predicted in range(width):
@@ -931,44 +965,43 @@ def plot_cm(cM, labels,title):
             plt.gca().annotate(
                     '{:d}'.format(int(cmNormalized[predicted,real])),xy=(real, predicted),
                     horizontalalignment = 'center',verticalalignment = 'center',color = color)
-    # making sure that the figure is not clipped
+    ## making sure that the figure is not clipped
     plt.tight_layout()
-    # saving the figure
+    ## saving the figure
     fig.savefig(title +'.png')
     
-# loading the pretrained model
+## loading the pretrained model
 model = load_model('model_ucd.h5')
 
-# load weights into new model
+## load weights into new model
 model.load_weights("model_weights_ucd.h5")
 print("Loaded model from disk")
 
-#loading the testData and groundTruth data
+## loading the testData and groundTruth data
 test_x = np.load('testData_ucd.npy')
 groundTruth = np.load('groundTruth_ucd.npy')
 
-# evaluate loaded model on test data
-
+## evaluate loaded model on test data
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 score = model.evaluate(test_x,groundTruth,verbose=2)
 
-
+## print out values for metrics
 print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 print('Baseline Error: %.2f%%' %(100-score[1]*100))
 
 
 ## Creating and plotting a confusion matrix
 
-# defining the class labels
+## defining the 12 class labels
 labels = ['WalkForward','WalkLeft','WalkRight','WalkUp','WalkDown','RunForward', 'JumpUp', 'Sit', 'Stand', 'Sleep', 'ElevatorUp', 'ElevatorDown']
-# predicting the classes
+
+## predicting the classes
 predictions = model.predict(test_x,verbose=2)
 
-# getting the class predicted and class in ground truth for creation of confusion matrix
+## getting the class predicted and class in ground truth for creation of confusion matrix
 predictedClass = np.zeros((predictions.shape[0]))
-
-
 groundTruthClass = np.zeros((groundTruth.shape[0]))
+
 for instance in range (groundTruth.shape[0]):
     predictedClass[instance] = np.argmax(predictions[instance,:])
     groundTruthClass[instance] = np.argmax(groundTruth[instance,:])
@@ -976,7 +1009,8 @@ for instance in range (groundTruth.shape[0]):
 cm = metrics.confusion_matrix(groundTruthClass,predictedClass)
 
 print cm
-# plotting the confusion matrix
+
+## plotting the confusion matrix
 plot_cm(cm, labels,'confusion_matrix_90')
 
 print model.summary()
@@ -1046,10 +1080,10 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 # score = model.evaluate(test_x,groundTruth,verbose=2)
 history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
 
-# loading the pretrained model
+## loading the pretrained model
 # history = load_model('model_ucd.h5')
 
-# load weights into new model
+## load weights into new model
 # model.load_weights("model_weights_ucd.h5")
 
 # history = model.fit(x_test, y_test, nb_epoch=10, validation_split=0.2, shuffle=True)
@@ -1059,7 +1093,7 @@ model.metrics_names
 
 
 print(history.history.keys())
-#  "Accuracy"
+##  "Accuracy"
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
 plt.title('model accuracy')
@@ -1067,7 +1101,8 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
-# "Loss"
+
+## "Loss"
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('model loss')
@@ -1077,30 +1112,26 @@ plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
 ```
 
-    Train on 39962 samples, validate on 9991 samples
-    Epoch 1/3
-     - 77s - loss: 1.6958 - acc: 0.3971 - val_loss: 2.5329 - val_acc: 0.1729
-    Epoch 2/3
-     - 83s - loss: 1.6836 - acc: 0.3996 - val_loss: 2.5658 - val_acc: 0.1652
-    Epoch 3/3
-     - 82s - loss: 1.6791 - acc: 0.4009 - val_loss: 2.5203 - val_acc: 0.1677
-    ['acc', 'loss', 'val_acc', 'val_loss']
+
+    ---------------------------------------------------------------------------
+
+    NameError                                 Traceback (most recent call last)
+
+    <ipython-input-59-d27f64eb81b7> in <module>()
+    ----> 1 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+          2 # score = model.evaluate(test_x,groundTruth,verbose=2)
+          3 history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
+          4 
+          5 ## loading the pretrained model
 
 
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_2.png)
+    NameError: name 'model' is not defined
 
 
 
 ```python
 # history.history['loss']
-
 print history.model.evaluate(testX,testY,verbose=3)
-
 ```
 
     [1.8351253166976615, 0.35781952472703915]
@@ -1110,6 +1141,7 @@ print history.model.evaluate(testX,testY,verbose=3)
 
 
 ```python
+## function to find out input and output names of frozen graphs
 def print_graph_nodes(filename):
     import tensorflow as tf
     g = tf.GraphDef()
@@ -1132,12 +1164,12 @@ def print_graph_nodes(filename):
 
 K.clear_session()
 
-# This was created with @warptime's help. Thank you!
+## This was created with @warptime's help. Thank you!
 
 saved_model_path = "./tensorflow_pb_models/model_hcd_test.h5"
 
 model = load_model(saved_model_path)
-nb_classes = 1 # The number of output nodes in the model
+nb_classes = 1 ## The number of output nodes in the model
 prefix_output_node_names_of_final_network = 'output_node'
 
 K.set_learning_phase(0)
@@ -1169,7 +1201,7 @@ print('saved the constant graph (ready for inference) at: ', osp.join(output_fld
 
 
 ```python
-# Method 1 inspect output
+## Method 1 inspect output
 
 print_graph_nodes("./tensorflow_pb_models/model_ucd.h5.pb")
 # print_graph_nodes("./graph_test/output_graph.pb")
@@ -1197,8 +1229,6 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
     @return The frozen graph definition.
     """
     
-    
-    
     from tensorflow.python.framework.graph_util import convert_variables_to_constants
     graph = session.graph
     with graph.as_default():
@@ -1213,19 +1243,14 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
                                                       output_names, freeze_var_names)
         return frozen_graph
 
-
-# Create, compile and train model...
-
+## Create, compile and train model...
 K.set_learning_phase(0)
 
 # model = "model_ucd.h5"
 model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
 
 # tf.reset_default_graph()
-
-
 frozen_graph = freeze_session(K.get_session(), output_names=[out.op.name for out in model.outputs])
-
 tf.train.write_graph(frozen_graph, "./tensorflow_pb_models/", "ucd_model_test2.pb", as_text=False)
 ```
 
@@ -1242,8 +1267,7 @@ tf.train.write_graph(frozen_graph, "./tensorflow_pb_models/", "ucd_model_test2.p
 
 
 ```python
-# Method 2 inspect output
-
+## Method 2 inspect output
 print_graph_nodes("./tensorflow_pb_models/ucd_model_test2.pb")
 ```
 
@@ -1267,7 +1291,6 @@ model = load_model('model_hcd_test.h5')
 print(model.output.op.name)
 saver = tf.train.Saver()
 saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
-
 ```
 
     OUTPUT/truediv
@@ -1294,8 +1317,7 @@ saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
 
 
 ```python
-# Method 3 inspect output
-
+## Method 3 inspect output
 print_graph_nodes("./tensorflow_pb_models/ucd_keras_frozen3_test.pb")
 ```
 
@@ -1312,14 +1334,14 @@ import os
 model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
 # model.load_weights("model_weights_ucd.h5")
  
-# All new operations will be in test mode from now on.
+## All new operations will be in test mode from now on
 K.set_learning_phase(0)
  
-# Serialize the model and get its weights, for quick re-building.
+## Serialize the model and get its weights, for quick re-building
 config = model.get_config()
 weights = model.get_weights()
  
-# Re-build a model where the learning phase is now hard-coded to 0.
+## Re-build a model where the learning phase is now hard-coded to 0
 new_model = Sequential.from_config(config)
 new_model.set_weights(weights)
  
@@ -1329,7 +1351,7 @@ checkpoint_state_name = "checkpoint_state"
 input_graph_name = "input_graph.pb"
 output_graph_name = "output_graph.pb"
  
-# Temporary save graph to disk without weights included.
+## Temporary save graph to disk without weights included
 saver = tf.train.Saver()
 checkpoint_path = saver.save(K.get_session(), checkpoint_prefix, global_step=0, latest_filename=checkpoint_state_name)
 tf.train.write_graph(K.get_session().graph, temp_dir, input_graph_name)
@@ -1343,7 +1365,7 @@ filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(temp_dir, output_graph_name)
 clear_devices = False
  
-# Embed weights inside the graph and save to disk.
+## Embed weights inside the graph and save to disk
 freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
                           input_binary, checkpoint_path,
                           output_node_names, restore_op_name,
@@ -1364,13 +1386,13 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
 
 import webbrowser
 
-# convert the model to tensorboard viz
+## convert the model to tensorboard viz
 !python /Users/aelali/anaconda/lib/python2.7/site-packages/tensorflow/python/tools/import_pb_to_tensorboard.py --model_dir ~/Desktop/HAR-CNN-Keras/tensorflow_pb_models/model_ucd.h5.pb --log_dir /tmp/tensorflow_logdir 
 
-# run tensorboard on stated logdir
+## run tensorboard on stated logdir
 !tensorboard --logdir /tmp/tensorflow_logdir
 
-# go to tensorboard in your browser
+## go to tensorboard in your browser
 # url = 'http://' + 'localhost:6006/'
 # webbrowser.open(url)
 
@@ -1531,7 +1553,7 @@ import webbrowser
 
 
 ```python
-# ## DEPREC
+## DEPREC
 
 # import tensorflow as tf
 
@@ -1542,35 +1564,36 @@ import webbrowser
 #         graph_def = tf.GraphDef()
 #         graph_def.ParseFromString(f.read())
 
-#     # Then, we import the graph_def into a new Graph and returns it 
+## Then, we import the graph_def into a new Graph and returns it 
 #     with tf.Graph().as_default() as graph:
 #         # The name var will prefix every op/nodes in your graph
 #         # Since we load everything in a new graph, this is not needed
 #         tf.import_graph_def(graph_def, name="prefix")
 #     return graph
 
-#  # We use our "load_graph" function
+## We use our "load_graph" function
 #     graph = load_graph(args.frozen_model_filename)
 
-#     # We can verify that we can access the list of operations in the graph
+## We can verify that we can access the list of operations in the graph
 #     for op in graph.get_operations():
 #         print(op.name)
 #         # prefix/Placeholder/inputs_placeholder
 #         # ...
 #         # prefix/Accuracy/predictions
         
-#     # We access the input and output nodes 
+## We access the input and output nodes 
 #     x = graph.get_tensor_by_name('prefix/Placeholder/inputs_placeholder:0')
 #     y = graph.get_tensor_by_name('prefix/Accuracy/predictions:0')
         
-#     # We launch a Session
+## We launch a Session
 #     with tf.Session(graph=graph) as sess:
 #         # Note: we don't nee to initialize/restore anything
 #         # There is no Variables in this graph, only hardcoded constants 
 #         y_out = sess.run(y, feed_dict={
 #             x: [[3, 5, 7, 4, 5, 1, 1, 1, 1, 1]] # < 45
 #         })
-#         # I taught a neural net to recognise when a sum of numbers is bigger than 45
-#         # it should return False in this case
+
+## I taught a neural net to recognise when a sum of numbers is bigger than 45
+## it should return False in this case
 #         print(y_out) # [[ False ]] Yay, it works!
 ```
