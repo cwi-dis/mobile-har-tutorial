@@ -112,51 +112,53 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        switch (event.sensor.getType()) {
-            case Sensor.TYPE_ACCELEROMETER:
-                if (expectAcc) {
-                    values.add(event.values[0]);
-                    values.add(event.values[1]);
-                    values.add(event.values[2]);
-                    expectAcc = false;
-                }
-                break;
-            case Sensor.TYPE_GYROSCOPE:
-                if (!expectAcc) {
-                    values.add(event.values[0]);
-                    values.add(event.values[1]);
-                    values.add(event.values[2]);
-                    expectAcc = true;
-                }
-                break;
-        }
-
-
-        if (values.size() == N_FEATURES * N_STEPS) {
-            float[] arrVals = new float[N_FEATURES * N_STEPS];
-            for (int i = 0; i < arrVals.length; i++) {
-                arrVals[i] = values.get(i);
+        synchronized (this) {
+            switch (event.sensor.getType()) {
+                case Sensor.TYPE_ACCELEROMETER:
+                    if (expectAcc) {
+                        values.add(event.values[0]);
+                        values.add(event.values[1]);
+                        values.add(event.values[2]);
+                        expectAcc = false;
+                    }
+                    break;
+                case Sensor.TYPE_GYROSCOPE:
+                    if (!expectAcc) {
+                        values.add(event.values[0]);
+                        values.add(event.values[1]);
+                        values.add(event.values[2]);
+                        expectAcc = true;
+                    }
+                    break;
             }
 
-            results = classifier.predictProbabilities(arrVals);
 
-            walkForwardTextView.setText(Float.toString(results[0]));
-            walkLeftTextView.setText(Float.toString(results[1]));
-            walkRightTextView.setText(Float.toString(results[2]));
-            walkUpTextView.setText(Float.toString(results[3]));
-            walkDownTextView.setText(Float.toString(results[4]));
-            runForwardTextView.setText(Float.toString(results[5]));
-            jumpUpTextView.setText(Float.toString(results[6]));
-            sitTextView.setText(Float.toString(results[7]));
-            standTextView.setText(Float.toString(results[8]));
-            sleepTextView.setText(Float.toString(results[9]));
-            elevatorUpTextView.setText(Float.toString(results[10]));
-            elevatorDownTextView.setText(Float.toString(results[11]));
+            if (values.size() == N_FEATURES * N_STEPS) {
+                float[] arrVals = new float[N_FEATURES * N_STEPS];
+                for (int i = 0; i < arrVals.length; i++) {
+                    arrVals[i] = values.get(i);
+                }
 
-            Log.v("arrVals", Arrays.toString(arrVals));
-            Log.v("results", Arrays.toString(results));
+                results = classifier.predictProbabilities(arrVals);
 
-            values.clear();
+                walkForwardTextView.setText(Float.toString(results[0]));
+                walkLeftTextView.setText(Float.toString(results[1]));
+                walkRightTextView.setText(Float.toString(results[2]));
+                walkUpTextView.setText(Float.toString(results[3]));
+                walkDownTextView.setText(Float.toString(results[4]));
+                runForwardTextView.setText(Float.toString(results[5]));
+                jumpUpTextView.setText(Float.toString(results[6]));
+                sitTextView.setText(Float.toString(results[7]));
+                standTextView.setText(Float.toString(results[8]));
+                sleepTextView.setText(Float.toString(results[9]));
+                elevatorUpTextView.setText(Float.toString(results[10]));
+                elevatorDownTextView.setText(Float.toString(results[11]));
+
+                Log.v("arrVals", Arrays.toString(arrVals));
+                Log.v("results", Arrays.toString(results));
+
+                values.clear();
+            }
         }
     }
 
