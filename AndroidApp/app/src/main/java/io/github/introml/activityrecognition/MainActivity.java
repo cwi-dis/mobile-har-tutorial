@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -23,14 +22,8 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, TextToSpeech.OnInitListener {
 
-    private static final int N_SAMPLES = 90;
-    private static List<Float> x;
-    private static List<Float> y;
-    private static List<Float> z;
-    private static List<Float> gyr_x;
-    private static List<Float> gyr_y;
-    private static List<Float> gyr_z;
-
+    List<Float> values = new ArrayList<Float>();
+    boolean expectAcc = true;
 
     private TextView walkForwardTextView;
     private TextView walkLeftTextView;
@@ -48,20 +41,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] results;
     private TensorFlowClassifier classifier;
 
+
+    private static final int N_FEATURES = 6;
+    private static final int N_STEPS = 90;
+
     //    private String[] labels = {"Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
-    private String[] labels = {"WalkForward","WalkLeft","WalkRight","WalkUp","WalkDown","RunForward", "JumpUp", "Sit", "Stand", "Sleep", "ElevatorUp", "ElevatorDown"};
+    private String[] labels = {"WalkForward", "WalkLeft", "WalkRight", "WalkUp", "WalkDown", "RunForward", "JumpUp", "Sit", "Stand", "Sleep", "ElevatorUp", "ElevatorDown"};
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        x = new ArrayList<>();
-        y = new ArrayList<>();
-        z = new ArrayList<>();
-        gyr_x = new ArrayList<>();
-        gyr_y = new ArrayList<>();
-        gyr_z = new ArrayList<>();
+        values = new ArrayList<>();
 
         walkForwardTextView = (TextView) findViewById(R.id.walkforward_prob);
         walkLeftTextView = (TextView) findViewById(R.id.walkleft_prob);
@@ -120,147 +112,57 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                if (expectAcc) {
+                    values.add(event.values[0]);
+                    values.add(event.values[1]);
+                    values.add(event.values[2]);
+                    expectAcc = false;
+                }
+                break;
+            case Sensor.TYPE_GYROSCOPE:
+                if (!expectAcc) {
+                    values.add(event.values[0]);
+                    values.add(event.values[1]);
+                    values.add(event.values[2]);
+                    expectAcc = true;
+                }
+                break;
+        }
 
-        synchronized (this) {
-            float[] accels = new float[0];
-            float[] gyrs = new float[0];
-            switch (event.sensor.getType()) {
-                case Sensor.TYPE_ACCELEROMETER:
-                    x.add(event.values[0]);
-                    y.add(event.values[1]);
-                    z.add(event.values[2]);
-//                    arrayCopy(event.values, gravity);
-                    accels = event.values.clone();
-                    break;
 
-                case Sensor.TYPE_GYROSCOPE:
-                    gyr_x.add(event.values[0]);
-                    gyr_y.add(event.values[1]);
-                    gyr_z.add(event.values[2]);
-                    gyrs = event.values.clone();
-                    break;
+        if (values.size() == N_FEATURES * N_STEPS) {
+            float[] arrVals = new float[N_FEATURES * N_STEPS];
+            for (int i = 0; i < arrVals.length; i++) {
+                arrVals[i] = values.get(i);
             }
 
-            ArrayList<float[]> tmp2 = new ArrayList<>();
-            List<List<Float>> tmp = new ArrayList<>();
+            results = classifier.predictProbabilities(arrVals);
 
+            walkForwardTextView.setText(Float.toString(results[0]));
+            walkLeftTextView.setText(Float.toString(results[1]));
+            walkRightTextView.setText(Float.toString(results[2]));
+            walkUpTextView.setText(Float.toString(results[3]));
+            walkDownTextView.setText(Float.toString(results[4]));
+            runForwardTextView.setText(Float.toString(results[5]));
+            jumpUpTextView.setText(Float.toString(results[6]));
+            sitTextView.setText(Float.toString(results[7]));
+            standTextView.setText(Float.toString(results[8]));
+            sleepTextView.setText(Float.toString(results[9]));
+            elevatorUpTextView.setText(Float.toString(results[10]));
+            elevatorDownTextView.setText(Float.toString(results[11]));
 
-            if (!x.isEmpty() && !y.isEmpty()){
-                tmp.add(x.subList(0,1));
-                tmp.add(y.subList(0,1));
+            Log.v("arrVals", Arrays.toString(arrVals));
+            Log.v("results", Arrays.toString(results));
 
-            }
-
-//        tmp.subList(0,89);
-
-//            tmp.add(y);
-//            tmp.add(gyr_x);
-//            tmp.add(gyr_y);
-
-
-            Collections.addAll(tmp2, gyrs);
-            Collections.addAll(tmp2, accels);
-
-            Log.v("x,y,gyr_x, gyr_y", Arrays.toString(new List[]{tmp}));
-//            Log.v("all", Arrays.toString(new ArrayList[]{tmp2}));
-
-        activityPrediction();
-
-//            Log.v("acc_x", String.valueOf(x));
-//            Log.v("gyr_x", String.valueOf(gyr_x));
-//            Log.v("gyr_z", String.valueOf(gyr_z));
-
+            values.clear();
+        }
     }
-}
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
-    }
-
-
-//    Sanity check //
-
-//      int n = 90;
-//      for (int i=1; i<=n; i++) {
-//          x.add((float) i);
-////          y.add((float) i);
-////          z.add((float) i);
-////          gyr_x.add((float) i);
-////          gyr_y.add((float) i);
-////          gyr_z.add((float) i);
-//
-//      }
-//
-//      for (int i=91; i<=180; i++) {
-////          x.add((float) i);
-////          y.add((float) i);
-////          z.add((float) i);
-//          gyr_x.add((float) i);
-////          gyr_y.add((float) i);
-////          gyr_z.add((float) i);
-//
-//      }
-
-
-    private void activityPrediction() {
-
-
-        if (x.size() == N_SAMPLES && y.size() == N_SAMPLES && z.size() == N_SAMPLES && gyr_x.size() == N_SAMPLES && gyr_y.size() == N_SAMPLES && gyr_z.size() == N_SAMPLES) {
-            List<Float> data = new ArrayList<>();
-
-            data.addAll(x);
-            data.addAll(y);
-            data.addAll(z);
-            data.addAll(gyr_x);
-            data.addAll(gyr_y);
-            data.addAll(gyr_z);
-
-            Log.v("data", Arrays.toString(toFloatArray(data)));
-
-
-            // TODO:
-            // Need data in following format
-            // shape: (1, 90, 6, 1) #(observations, timesteps/n_samples, features (acc + gyro), channels).
-//            [[[ 1.07006741e+00]
-//              [ 4.07870710e-01]
-//              [-3.87284398e-01]
-//              [ 3.16722336e+01]
-//              [ 7.24022865e+00]
-//              [-6.91453934e+00]]
-//              ...
-//             [[ 1.27952909e+00]
-//              [ 3.82536739e-01]
-//              [-3.43362540e-01]
-//              [ 2.96580734e+01]
-//              [ 7.24022865e+00]
-//              [-1.61796761e+01]]] # each data point / observation has 90 samples with 6 features
-//
-            results = classifier.predictProbabilities(toFloatArray(data));
-
-            Log.v("results", String.valueOf(results));
-
-
-            walkForwardTextView.setText(Float.toString(round(results[0], 2)));
-            walkLeftTextView.setText(Float.toString(round(results[1], 2)));
-            walkRightTextView.setText(Float.toString(round(results[2], 2)));
-            walkUpTextView.setText(Float.toString(round(results[3], 2)));
-            walkDownTextView.setText(Float.toString(round(results[4], 2)));
-            runForwardTextView.setText(Float.toString(round(results[5], 2)));
-            jumpUpTextView.setText(Float.toString(round(results[6], 2)));
-            sitTextView.setText(Float.toString(round(results[7], 2)));
-            standTextView.setText(Float.toString(round(results[8], 2)));
-            sleepTextView.setText(Float.toString(round(results[9], 2)));
-            elevatorUpTextView.setText(Float.toString(round(results[10], 2)));
-            elevatorDownTextView.setText(Float.toString(round(results[11], 2)));
-
-            x.clear();
-            y.clear();
-            z.clear();
-            gyr_x.clear();
-            gyr_y.clear();
-            gyr_z.clear();
-        }
     }
 
     private float[] toFloatArray(List<Float> list) {
