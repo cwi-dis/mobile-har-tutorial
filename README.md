@@ -58,6 +58,33 @@ K.clear_session()
 !mv mobilehci2018_keras_har_tutorial.md README.md
 ```
 
+    [NbConvertApp] Converting notebook mobilehci2018_keras_har_tutorial.ipynb to markdown
+    [NbConvertApp] Support files will be in mobilehci2018_keras_har_tutorial_files/
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Writing 48181 bytes to mobilehci2018_keras_har_tutorial.md
+
+
 
 ```python
 ## Check tensorflow version
@@ -529,12 +556,12 @@ android_sit_sample = [0.30177248, 0.2778223, 0.29698244, 0.2921924, 0.2921924, 0
 len_sample = len(android_sit_sample)
 print 'size of sample to look at:' + str(len_sample)
 
-print 'android sample for acc_x: '+ str(np.mean(android_sit_sample))
+print 'android acc_x sample (recording) for sitting activity: '+ str(np.mean(android_sit_sample))
 plt.plot(android_sit_sample)
 plt.show()
 # print df[df["activity"] == "Sitting"]["acc_x"]
 sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
-print 'usc-had dataset sample for acc_x: '+ str(np.mean(sit_df_acc_x))
+print 'usc-had dataset acc_x sample for sitting activity: '+ str(np.mean(sit_df_acc_x))
 plt.plot(sit_df_acc_x)
 plt.show()
 ```
