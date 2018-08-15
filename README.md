@@ -12,30 +12,32 @@
 
 ## Some code adapted from: GUILLAUME CHEVALIER https://github.com/guillaume-chevalier/LSTM-Human-Activity-Recognition
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-# import matplotlib
-from scipy import stats
-from keras.models import Sequential
+import tensorflow as tf
+from tensorflow.python.framework import graph_util, graph_io
+from tensorflow.python.tools import freeze_graph
+
+from keras.models import Sequential, load_model, model_from_json
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, LSTM, LSTMCell, Bidirectional, TimeDistributed, InputLayer, ConvLSTM2D
 from keras import optimizers
-import os
+from keras import backend as K
+
+from sklearn import metrics
+from sklearn.model_selection import train_test_split, cross_val_score
+from scipy import stats
 import scipy.io
+
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm
+import seaborn as sns
 import pickle
 import math
 from mpl_toolkits.mplot3d import Axes3D
-from scipy import stats
-import tensorflow as tf
-import seaborn as sns
 import pylab
-from sklearn import metrics
-from sklearn.model_selection import train_test_split, cross_val_score
-
-from tensorflow.python.framework import graph_util
-from tensorflow.python.framework import graph_io
-from keras.models import load_model
-from keras import backend as K
+import os
 import os.path as osp
 import wget
 import zipfile
@@ -71,7 +73,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 65567 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 66271 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -479,32 +481,217 @@ df[1:10]
 
 
 ```python
-# sanity check
 
-print min(df['acc_x'])
-print max(df['acc_x'])
-
-print min(df['acc_y'])
-print max(df['acc_y'])
-
-print min(df['acc_z'])
-print max(df['acc_z'])
-
-print min(df['gyr_z'])
-print max(df['gyr_z'])
 ```
 
     -3.3526623249053955
     6.931558132171631
+    0.782799482324
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_1.png)
+
+
     -6.417827129364014
     4.949891567230225
+    0.201336618765
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_3.png)
+
+
     -5.416336536407471
     4.539283275604248
+    -0.0619099863055
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_5.png)
+
+
+    -770.8486328125
+    856.3609008789062
+    -0.413887145396
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_7.png)
+
+
+    -775.4454345703125
+    559.6139526367188
+    -0.351748533882
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_9.png)
+
+
     -808.1836547851562
     816.5776977539062
+    -0.174795881101
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_13_11.png)
 
 
 ### Explore your dataset (through visualization)
+
+
+```python
+## explore your overal accel and gyro values: min, max, mean, and plot over time
+
+''' 
+From the UbiComp'12 paper:
+"Based on the above considerations, we use an off-the-shelf sensing platform called MotionNode to capture human activity signals 
+and build our dataset. MotionNode is a 6-DOF inertial measurement unit (IMU) specifically designed for human motion sensing 
+applications (see Figure 2) [2]. Each MotionNode itself is a multi-modal sensor that integrates a 3-axis accelerometer, 
+3-axis gyroscope, and a 3-axis mag- netometer. The measurement range is ±6g and ±500dps for each axis of accelerometer and gyroscope 
+respectively. Although body limbs and extremities can exhibit up to ±12g in acceleration, points near the torso 
+and hip experience no more than ±6g range in acceleration [6]."
+'''
+
+## For Android Nexus 5 sensor specs, check: https://www.bosch-sensortec.com/bst/products/all_products/bmi160
+
+## accelerometer 
+print 'acc_x'
+print min(df['acc_x'])
+print max(df['acc_x'])
+print np.mean(df['acc_x'])
+plt.plot(df['acc_x'])
+plt.show()
+
+print 'acc_y'
+print min(df['acc_y'])
+print max(df['acc_y'])
+print np.mean(df['acc_y'])
+plt.plot(df['acc_y'])
+plt.show()
+
+print 'acc_z'
+print min(df['acc_z'])
+print max(df['acc_z'])
+print np.mean(df['acc_z'])
+plt.plot(df['acc_z'])
+plt.show()
+
+print 'gyr_x'
+print min(df['gyr_x'])
+print max(df['gyr_x'])
+print np.mean(df['gyr_x'])
+plt.plot(df['gyr_x'])
+plt.show()
+
+print 'gyr_y'
+print min(df['gyr_y'])
+print max(df['gyr_y'])
+print np.mean(df['gyr_y'])
+plt.plot(df['gyr_y'])
+plt.show()
+
+print 'gyr_z'
+print min(df['gyr_z'])
+print max(df['gyr_z'])
+print np.mean(df['gyr_z'])
+plt.plot(df['gyr_z'])
+plt.show()
+```
+
+    acc_x
+    -3.3526623249053955
+    6.931558132171631
+    0.782799482324
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
+
+
+    acc_y
+    -6.417827129364014
+    4.949891567230225
+    0.201336618765
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
+
+
+    acc_z
+    -5.416336536407471
+    4.539283275604248
+    -0.0619099863055
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
+
+
+    gyr_x
+    -770.8486328125
+    856.3609008789062
+    -0.413887145396
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
+
+
+    gyr_y
+    -775.4454345703125
+    559.6139526367188
+    -0.351748533882
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
+
+
+    gyr_z
+    -808.1836547851562
+    816.5776977539062
+    -0.174795881101
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
+
+
+
+```python
+## Check mismatch between sensor readings of dataset and Android sensors
+
+android_sit_sample = [0.30177248, 0.2778223, 0.29698244, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.2921924, 0.29698244, 0.30177248, 0.2778223, 0.2921924, 0.2921924, 0.2921924, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.3065625, 0.2921924, 0.2682422, 0.26345217, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.29698244, 0.28740236, 0.30177248, 0.2921924, 0.28261232, 0.28740236, 0.2682422, 0.28740236, 0.29698244, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.29698244, 0.2921924, 0.2921924, 0.30177248, 0.2921924, 0.28740236, 0.28261232, 0.31135255, 0.29698244, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.29698244, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.3065625, 0.28740236, 0.28740236, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2778223, 0.2778223, 0.2921924, 0.3065625, 0.3065625, 0.28261232, 0.27303225, 0.3065625, 0.31135255, 0.29698244, 0.29698244, 0.3065625, 0.3065625, 0.28740236, 0.28261232, 0.3065625, 0.28261232, 0.29698244, 0.3065625, 0.31135255, 0.28740236, 0.2921924, 0.29698244, 0.2682422, 0.28261232, 0.30177248, 0.29698244, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.2778223, 0.29698244, 0.28740236, 0.30177248, 0.28740236, 0.2921924, 0.29698244, 0.30177248, 0.30177248, 0.30177248, 0.30177248, 0.29698244, 0.27303225, 0.28740236, 0.30177248, 0.2921924, 0.27303225, 0.28740236, 0.27303225, 0.28261232, 0.29698244, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.28740236, 0.2778223, 0.3065625, 0.29698244, 0.28740236, 0.28740236, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.29698244, 0.29698244, 0.31135255, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.30177248, 0.29698244, 0.30177248, 0.29698244, 0.28261232, 0.2921924, 0.2921924, 0.30177248, 0.29698244, 0.28261232, 0.28740236, 0.28261232, 0.3065625, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.29698244, 0.29698244, 0.2921924, 0.30177248, 0.2921924, 0.27303225, 0.28261232, 0.28261232, 0.2921924, 0.28740236, 0.28740236, 0.28740236, 0.30177248, 0.2778223, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.31135255, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.28740236, 0.29698244, 0.32572266, 0.3161426, 0.28261232, 0.29698244, 0.2921924, 0.31135255, 0.3161426, 0.28740236, 0.30177248, 0.2921924, 0.28740236, 0.30177248, 0.3065625, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.27303225, 0.2778223, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.32093263, 0.29698244, 0.29698244, 0.27303225, 0.28261232, 0.30177248, 0.31135255, 0.28261232, 0.33530274, 0.16286133, 0.23471193, 0.26345217, 0.2682422, 0.30177248, 0.28740236, 0.26345217, 0.2921924, 0.2921924, 0.2778223, 0.28740236, 0.28261232, 0.2682422, 0.2778223, 0.27303225, 0.2921924, 0.28261232, 0.2682422, 0.30177248, 0.27303225, 0.28740236, 0.28261232, 0.28261232, 0.2778223, 0.28740236, 0.28740236, 0.2921924, 0.28261232, 0.2682422, 0.2778223, 0.2921924, 0.28261232, 0.28261232, 0.2778223, 0.2778223, 0.2778223, 0.28261232, 0.28261232, 0.2682422, 0.28740236, 0.28261232, 0.26345217, 0.28261232, 0.2778223, 0.28261232, 0.2778223, 0.25387207, 0.2682422, 0.27303225, 0.2682422, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.29698244, 0.28740236, 0.26345217, 0.2921924, 0.2778223, 0.2682422, 0.2682422, 0.2778223, 0.29698244, 0.30177248, 0.28261232, 0.29698244, 0.2921924, 0.27303225, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.28261232, 0.28740236, 0.28740236, 0.2778223, 0.28740236, 0.2778223, 0.29698244, 0.2778223, 0.2921924, 0.2778223, 0.27303225, 0.25866213, 0.28740236, 0.28261232, 0.28740236, 0.28261232, 0.28740236, 0.30177248, 0.28261232]
+len_sample = len(android_sit_sample)
+print 'size of sample:' + str(len_sample)
+
+print 'mean android sample acc_x: '+ str(np.mean(android_sit_sample))
+plt.plot(android_sit_sample)
+plt.show()
+# print df[df["activity"] == "Sitting"]["acc_x"]
+sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
+print 'mean dataset acc_x sample: '+ str(np.mean(sit_df_acc_x))
+plt.plot(sit_df_acc_x)
+plt.show()
+```
+
+    size of sample:348
+    mean android sample acc_x: 0.28942573997126436
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_1.png)
+
+
+    mean dataset acc_x sample: 0.923923912233
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_3.png)
+
 
 
 ```python
@@ -551,54 +738,55 @@ def plot_datasets(df,i=0,j=1000):
     
 plot_datasets(df)
 
+
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_0.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_6.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_7.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_8.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_9.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_10.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_11.png)
 
 
 
@@ -609,7 +797,7 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_0.png)
 
 
 
@@ -913,19 +1101,6 @@ Evaluate a pretrained model saved as *.h5 using 'testData_X.npy'
 and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentag. Also generates a png file for the confusion matrix.
 Based on work by Muhammad Shahnawaz
 """
-import matplotlib
-
-## importing the dependencies
-from keras.models import load_model, Sequential
-from keras import optimizers
-from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
-import numpy as np
-from sklearn import metrics
-import os
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import matplotlib.cm
-
 ## defining a function for plotting the confusion matrix
 ## takes cmNormalized
 os.environ['QT_PLUGIN_PATH'] = ''
@@ -1064,7 +1239,7 @@ print model.summary()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_29_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_1.png)
 
 
 
@@ -1136,7 +1311,6 @@ print history.model.evaluate(testX,testY,verbose=3)
 ```python
 ## function to find out input and output names of frozen graphs
 def print_graph_nodes(filename):
-    import tensorflow as tf
     g = tf.GraphDef()
     g.ParseFromString(open(filename, 'rb').read())
     print()
@@ -1318,12 +1492,6 @@ print_graph_nodes("./tensorflow_pb_models/ucd_keras_frozen3_test.pb")
 ```python
 ## Freeze graphs: Method 4
 
-from keras.models import  Sequential, load_model, model_from_json
-from keras import backend as K
-import tensorflow as tf
-from tensorflow.python.tools import freeze_graph
-import os
-
 model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
 # model.load_weights("model_weights_ucd.h5")
  
@@ -1376,7 +1544,6 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
 
 ```python
 ## Visualize using tensorboard
-
 import webbrowser
 
 ## convert the model to tensorboard viz
