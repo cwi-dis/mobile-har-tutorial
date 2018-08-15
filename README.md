@@ -58,33 +58,6 @@ K.clear_session()
 !mv mobilehci2018_keras_har_tutorial.md README.md
 ```
 
-    [NbConvertApp] Converting notebook mobilehci2018_keras_har_tutorial.ipynb to markdown
-    [NbConvertApp] Support files will be in mobilehci2018_keras_har_tutorial_files/
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 57587 bytes to mobilehci2018_keras_har_tutorial.md
-
-
 
 ```python
 ## Check tensorflow version
@@ -554,27 +527,27 @@ plt.show()
 
 android_sit_sample = [0.30177248, 0.2778223, 0.29698244, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.2921924, 0.29698244, 0.30177248, 0.2778223, 0.2921924, 0.2921924, 0.2921924, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.3065625, 0.2921924, 0.2682422, 0.26345217, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.29698244, 0.28740236, 0.30177248, 0.2921924, 0.28261232, 0.28740236, 0.2682422, 0.28740236, 0.29698244, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.29698244, 0.2921924, 0.2921924, 0.30177248, 0.2921924, 0.28740236, 0.28261232, 0.31135255, 0.29698244, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.29698244, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.3065625, 0.28740236, 0.28740236, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2778223, 0.2778223, 0.2921924, 0.3065625, 0.3065625, 0.28261232, 0.27303225, 0.3065625, 0.31135255, 0.29698244, 0.29698244, 0.3065625, 0.3065625, 0.28740236, 0.28261232, 0.3065625, 0.28261232, 0.29698244, 0.3065625, 0.31135255, 0.28740236, 0.2921924, 0.29698244, 0.2682422, 0.28261232, 0.30177248, 0.29698244, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.2778223, 0.29698244, 0.28740236, 0.30177248, 0.28740236, 0.2921924, 0.29698244, 0.30177248, 0.30177248, 0.30177248, 0.30177248, 0.29698244, 0.27303225, 0.28740236, 0.30177248, 0.2921924, 0.27303225, 0.28740236, 0.27303225, 0.28261232, 0.29698244, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.28740236, 0.2778223, 0.3065625, 0.29698244, 0.28740236, 0.28740236, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.29698244, 0.29698244, 0.31135255, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.30177248, 0.29698244, 0.30177248, 0.29698244, 0.28261232, 0.2921924, 0.2921924, 0.30177248, 0.29698244, 0.28261232, 0.28740236, 0.28261232, 0.3065625, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.29698244, 0.29698244, 0.2921924, 0.30177248, 0.2921924, 0.27303225, 0.28261232, 0.28261232, 0.2921924, 0.28740236, 0.28740236, 0.28740236, 0.30177248, 0.2778223, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.31135255, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.28740236, 0.29698244, 0.32572266, 0.3161426, 0.28261232, 0.29698244, 0.2921924, 0.31135255, 0.3161426, 0.28740236, 0.30177248, 0.2921924, 0.28740236, 0.30177248, 0.3065625, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.27303225, 0.2778223, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.32093263, 0.29698244, 0.29698244, 0.27303225, 0.28261232, 0.30177248, 0.31135255, 0.28261232, 0.33530274, 0.16286133, 0.23471193, 0.26345217, 0.2682422, 0.30177248, 0.28740236, 0.26345217, 0.2921924, 0.2921924, 0.2778223, 0.28740236, 0.28261232, 0.2682422, 0.2778223, 0.27303225, 0.2921924, 0.28261232, 0.2682422, 0.30177248, 0.27303225, 0.28740236, 0.28261232, 0.28261232, 0.2778223, 0.28740236, 0.28740236, 0.2921924, 0.28261232, 0.2682422, 0.2778223, 0.2921924, 0.28261232, 0.28261232, 0.2778223, 0.2778223, 0.2778223, 0.28261232, 0.28261232, 0.2682422, 0.28740236, 0.28261232, 0.26345217, 0.28261232, 0.2778223, 0.28261232, 0.2778223, 0.25387207, 0.2682422, 0.27303225, 0.2682422, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.29698244, 0.28740236, 0.26345217, 0.2921924, 0.2778223, 0.2682422, 0.2682422, 0.2778223, 0.29698244, 0.30177248, 0.28261232, 0.29698244, 0.2921924, 0.27303225, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.28261232, 0.28740236, 0.28740236, 0.2778223, 0.28740236, 0.2778223, 0.29698244, 0.2778223, 0.2921924, 0.2778223, 0.27303225, 0.25866213, 0.28740236, 0.28261232, 0.28740236, 0.28261232, 0.28740236, 0.30177248, 0.28261232]
 len_sample = len(android_sit_sample)
-print 'size of sample:' + str(len_sample)
+print 'size of sample to look at:' + str(len_sample)
 
-print 'mean android sample acc_x: '+ str(np.mean(android_sit_sample))
+print 'android sample for acc_x: '+ str(np.mean(android_sit_sample))
 plt.plot(android_sit_sample)
 plt.show()
 # print df[df["activity"] == "Sitting"]["acc_x"]
 sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
-print 'mean dataset acc_x sample: '+ str(np.mean(sit_df_acc_x))
+print 'usc-had dataset sample for acc_x: '+ str(np.mean(sit_df_acc_x))
 plt.plot(sit_df_acc_x)
 plt.show()
 ```
 
-    size of sample:348
-    mean android sample acc_x: 0.28942573997126436
+    size of sample to look at:348
+    android sample for acc_x: 0.28942573997126436
 
 
 
 ![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
 
 
-    mean dataset acc_x sample: 0.923923912233
+    usc-had dataset sample for acc_x: 0.923923912233
 
 
 
