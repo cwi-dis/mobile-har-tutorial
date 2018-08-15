@@ -23,6 +23,8 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements SensorEventListener, TextToSpeech.OnInitListener {
 
     List<Float> values = new ArrayList<Float>();
+    List<Float> x = new ArrayList<Float>();
+
     boolean expectAcc = true;
 
     private TextView walkForwardTextView;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         values = new ArrayList<>();
+        x = new ArrayList<>();
 
         walkForwardTextView = (TextView) findViewById(R.id.walkforward_prob);
         walkLeftTextView = (TextView) findViewById(R.id.walkleft_prob);
@@ -112,10 +115,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        synchronized (this) {
+//        synchronized (this) {
             switch (event.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER:
                     if (expectAcc) {
+                        x.add(event.values[0]);
                         values.add(event.values[0]);
                         values.add(event.values[1]);
                         values.add(event.values[2]);
@@ -131,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     }
                     break;
             }
+
+            Log.v("acc_x", Arrays.toString(new List[]{x}));
 
 
             if (values.size() == N_FEATURES * N_STEPS) {
@@ -158,8 +164,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.v("results", Arrays.toString(results));
 
                 values.clear();
+
             }
-        }
+
+
+
+//        }
+
     }
 
     @Override

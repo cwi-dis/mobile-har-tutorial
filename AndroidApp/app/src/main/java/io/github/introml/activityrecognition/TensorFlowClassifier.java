@@ -34,7 +34,6 @@ public class TensorFlowClassifier {
 
     public float[] predictProbabilities(float[] data) {
         float[] result = new float[OUTPUT_SIZE];
-        Log.v("result_tf_classify", String.valueOf(result));
 
         inferenceInterface.feed(INPUT_NODE, data, INPUT_SIZE);
         inferenceInterface.run(OUTPUT_NODES);
