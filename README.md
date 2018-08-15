@@ -71,7 +71,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 65715 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 65567 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -728,10 +728,10 @@ print "testY shape: " + str(testY.shape)
     12
     segments shape:(62476, 90, 6)
     labels shape:(62476, 12)
-    trainX shape: (50009, 90, 6, 1)
-    trainY shape: (50009, 12)
-    testX shape: (12467, 90, 6, 1)
-    testY shape: (12467, 12)
+    trainX shape: (49988, 90, 6, 1)
+    trainY shape: (49988, 12)
+    testX shape: (12488, 90, 6, 1)
+    testY shape: (12488, 12)
 
 
 
@@ -767,15 +767,10 @@ print "Columns / features: " + str(numOfColumns)
 
 ```python
 ## shape of data to feed frozen model later in Android code
-print testX[1][1] 
+print testX[[1]].shape
 ```
 
-    [[  1.27952909]
-     [  0.38253674]
-     [ -0.34336254]
-     [ 29.65807343]
-     [  7.24022865]
-     [-16.17967606]]
+    (1, 90, 6, 1)
 
 
 
@@ -1538,60 +1533,100 @@ import webbrowser
 # %%pixie_debugger
 ```
 
+### Test if your frozen model works as intended
+
 
 ```python
-## DEPREC
+def load_graph(frozen_graph_filename):
+    ## We load the protobuf file from the disk and parse it to retrieve the unserialized graph_def
+    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
 
-# g = tf.GraphDef()
-# g.ParseFromString(open("./tensorflow_pb_models/model_hcd_test.h5.pb", "rb").read())
-# [n for n in g.node if n.name.find("INPUT") != -1] # same for output or any other node you want to make sure is ok
-
-# [n for n in g.node if n.name.find("OUTPUT") != -1] # same for output or any other node you want to make sure is ok
+    ## Then, we import the graph_def into a new Graph and returns it 
+    with tf.Graph().as_default() as graph:
+        ## The name var will prefix every op/nodes in your graph
+        ## Since we load everything in a new graph, this is not needed
+        tf.import_graph_def(graph_def, name="prefix")
+    return graph
 ```
 
 
 ```python
-## DEPREC
-
-# import tensorflow as tf
-
-# def load_graph(frozen_graph_filename):
-#     # We load the protobuf file from the disk and parse it to retrieve the 
-#     # unserialized graph_def
-#     with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
-#         graph_def = tf.GraphDef()
-#         graph_def.ParseFromString(f.read())
-
-## Then, we import the graph_def into a new Graph and returns it 
-#     with tf.Graph().as_default() as graph:
-#         # The name var will prefix every op/nodes in your graph
-#         # Since we load everything in a new graph, this is not needed
-#         tf.import_graph_def(graph_def, name="prefix")
-#     return graph
-
 ## We use our "load_graph" function
-#     graph = load_graph(args.frozen_model_filename)
+graph = load_graph("/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/ucd_keras_frozen3.pb")
 
 ## We can verify that we can access the list of operations in the graph
-#     for op in graph.get_operations():
-#         print(op.name)
-#         # prefix/Placeholder/inputs_placeholder
-#         # ...
-#         # prefix/Accuracy/predictions
-        
-## We access the input and output nodes 
-#     x = graph.get_tensor_by_name('prefix/Placeholder/inputs_placeholder:0')
-#     y = graph.get_tensor_by_name('prefix/Accuracy/predictions:0')
-        
-## We launch a Session
-#     with tf.Session(graph=graph) as sess:
-#         # Note: we don't nee to initialize/restore anything
-#         # There is no Variables in this graph, only hardcoded constants 
-#         y_out = sess.run(y, feed_dict={
-#             x: [[3, 5, 7, 4, 5, 1, 1, 1, 1, 1]] # < 45
-#         })
-
-## I taught a neural net to recognise when a sum of numbers is bigger than 45
-## it should return False in this case
-#         print(y_out) # [[ False ]] Yay, it works!
+for op in graph.get_operations():
+    print(op.name)    
 ```
+
+    prefix/conv2d_1_input
+    prefix/conv2d_1/kernel
+    prefix/conv2d_1/kernel/read
+    prefix/conv2d_1/bias
+    prefix/conv2d_1/bias/read
+    prefix/conv2d_1/convolution
+    prefix/conv2d_1/BiasAdd
+    prefix/conv2d_1/Relu
+    prefix/max_pooling2d_1/MaxPool
+    prefix/dropout_1/Identity
+    prefix/flatten_1/Shape
+    prefix/flatten_1/strided_slice/stack
+    prefix/flatten_1/strided_slice/stack_1
+    prefix/flatten_1/strided_slice/stack_2
+    prefix/flatten_1/strided_slice
+    prefix/flatten_1/Const
+    prefix/flatten_1/Prod
+    prefix/flatten_1/stack/0
+    prefix/flatten_1/stack
+    prefix/flatten_1/Reshape
+    prefix/dense_1/kernel
+    prefix/dense_1/kernel/read
+    prefix/dense_1/bias
+    prefix/dense_1/bias/read
+    prefix/dense_1/MatMul
+    prefix/dense_1/BiasAdd
+    prefix/dense_1/Relu
+    prefix/dense_2/kernel
+    prefix/dense_2/kernel/read
+    prefix/dense_2/bias
+    prefix/dense_2/bias/read
+    prefix/dense_2/MatMul
+    prefix/dense_2/BiasAdd
+    prefix/dense_2/Relu
+    prefix/dense_3/kernel
+    prefix/dense_3/kernel/read
+    prefix/dense_3/bias
+    prefix/dense_3/bias/read
+    prefix/dense_3/MatMul
+    prefix/dense_3/BiasAdd
+    prefix/dense_3/Softmax
+
+
+
+```python
+# Get the input and output nodes 
+x = graph.get_tensor_by_name('prefix/conv2d_1_input:0')
+y = graph.get_tensor_by_name('prefix/dense_3/Softmax:0')
+
+## Launch tf session
+with tf.Session(graph=graph) as sess:
+    ## Note: we don't need to initialize/restore anything
+    ## There is no Variables in this graph, only hardcoded constants 
+    y_out = sess.run(y, feed_dict={
+        x: testX[[500]] # < 45
+    })
+    
+    l = np.round(testY[[500]])
+    print "label: " + str(l)
+    z = (np.round(y_out)).astype(int)
+    print "prediction: " + str(z)
+    
+    print "prediction correct? " + str(np.array_equal(l,z))
+```
+
+    label: [[0 0 0 0 0 0 0 1 0 0 0 0]]
+    prediction: [[0 0 0 0 0 0 0 1 0 0 0 0]]
+    prediction correct? True
+
