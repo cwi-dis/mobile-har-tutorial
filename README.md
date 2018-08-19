@@ -85,7 +85,17 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 50131 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Writing 52599 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -356,7 +366,7 @@ Section 1: Device Configuration
 **********************************************
 
 1. Device Type: MotionNode
-2. Sampling rate: 100Hz
+2. Sampling rate: 100Hz (or 10,000 microseconds)
 3. Accelerometer range: +-6g
 4. Gyroscope range: +-500dps
 
@@ -770,7 +780,7 @@ cvscores = []
 
 for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
 
-    print "Training on fold " + str(index+1) + "/14..."
+    print "Training on fold " + str(index+1) + "/14..." ## 14 due to number of subjects in our dataset
 
     # print("TRAIN:", train_index, "TEST:", test_index)
     trainX, testX = reshapedSegments[train_index], reshapedSegments[test_index]
@@ -786,9 +796,9 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     print trainX.shape
 
     ## fit the model
-    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), epochs=Epochs,batch_size=batchSize,verbose=2)
+    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
     
-#     ## save the model histories
+#     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
 #     dill.dump(history, open( "./history/model_" + str(index) + "_history.p","wb"))
 
     ## evaluate the model
@@ -806,7 +816,7 @@ np.save('groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
 np.save('testData_had_lstm_logo.npy',np.expand_dims(testX,1))
 
 ## write to JSON, in case you wanrt to work with that data format later when inspecting your model
-with open("./data/model_hcd_test.json", "w") as json_file:
+with open("./data/model_had_logo.json", "w") as json_file:
     json_file.write(model.to_json())
 
 ## write cvscores to file
@@ -1004,10 +1014,10 @@ print model.summary()
 
 
 ```python
-## plot acc and loss plot
+## plot acc and loss plot of last stored model weights in history variable
 
 ## load model history (models 1-14)
-history = pickle.load(open('./history/model_1_history.p','rb'))
+# history = pickle.load(open('./history/model_1_history.p','rb'))
 
 print(history.history.keys())
 
@@ -1031,54 +1041,6 @@ plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
 plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight'))
 ```
-
-
-    ---------------------------------------------------------------------------
-
-    ValueError                                Traceback (most recent call last)
-
-    <ipython-input-553-83b95a3d407c> in <module>()
-          6 # score = model.evaluate(test_x,groundTruth,verbose=2)
-          7 
-    ----> 8 history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
-          9 
-         10 
-
-
-    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/models.pyc in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
-       1000                               initial_epoch=initial_epoch,
-       1001                               steps_per_epoch=steps_per_epoch,
-    -> 1002                               validation_steps=validation_steps)
-       1003 
-       1004     def evaluate(self, x=None, y=None,
-
-
-    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
-       1628             sample_weight=sample_weight,
-       1629             class_weight=class_weight,
-    -> 1630             batch_size=batch_size)
-       1631         # Prepare validation data.
-       1632         do_validation = False
-
-
-    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in _standardize_user_data(self, x, y, sample_weight, class_weight, check_array_lengths, batch_size)
-       1478                                     output_shapes,
-       1479                                     check_batch_axis=False,
-    -> 1480                                     exception_prefix='target')
-       1481         sample_weights = _standardize_sample_weights(sample_weight,
-       1482                                                      self._feed_output_names)
-
-
-    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in _standardize_input_data(data, names, shapes, check_batch_axis, exception_prefix)
-        121                             ': expected ' + names[i] + ' to have shape ' +
-        122                             str(shape) + ' but got array with shape ' +
-    --> 123                             str(data_shape))
-        124     return data
-        125 
-
-
-    ValueError: Error when checking target: expected dense_3 to have shape (12,) but got array with shape (7,)
-
 
 
 ```python
@@ -1114,7 +1076,7 @@ K.clear_session()
 
 ## this was created with @warptime's help. Thank you!
 
-saved_model_path = "./tensorflow_pb_models/model_hcd_test.h5"
+saved_model_path = "./tensorflow_pb_models/model_hcd.h5"
 
 model = load_model(saved_model_path)
 nb_classes = 1 ## The number of output nodes in the model
@@ -1195,7 +1157,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
 K.set_learning_phase(0)
 
 # model = "model_ucd.h5"
-model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
+model = load_model('./tensorflow_pb_models/model_ucd.h5')
 
 # tf.reset_default_graph()
 frozen_graph = freeze_session(K.get_session(), output_names=[out.op.name for out in model.outputs])
@@ -1367,13 +1329,15 @@ def load_graph(frozen_graph_filename):
 
 ```python
 ## load the graph using the "load_graph" function
-graph = load_graph("/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/ucd_keras_frozen3.pb")
+graph = load_graph("/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/model_ucd.h5.pb")
 
 ## verify that we can access the list of operations in the graph
 for op in graph.get_operations():
     print(op.name)    
 ```
 
+    prefix/keras_learning_phase/input
+    prefix/keras_learning_phase
     prefix/conv2d_1_input
     prefix/conv2d_1/kernel
     prefix/conv2d_1/kernel/read
@@ -1383,7 +1347,26 @@ for op in graph.get_operations():
     prefix/conv2d_1/BiasAdd
     prefix/conv2d_1/Relu
     prefix/max_pooling2d_1/MaxPool
-    prefix/dropout_1/Identity
+    prefix/dropout_1/cond/Switch
+    prefix/dropout_1/cond/switch_t
+    prefix/dropout_1/cond/pred_id
+    prefix/dropout_1/cond/mul/y
+    prefix/dropout_1/cond/mul/Switch
+    prefix/dropout_1/cond/mul
+    prefix/dropout_1/cond/dropout/keep_prob
+    prefix/dropout_1/cond/dropout/Shape
+    prefix/dropout_1/cond/dropout/random_uniform/min
+    prefix/dropout_1/cond/dropout/random_uniform/max
+    prefix/dropout_1/cond/dropout/random_uniform/RandomUniform
+    prefix/dropout_1/cond/dropout/random_uniform/sub
+    prefix/dropout_1/cond/dropout/random_uniform/mul
+    prefix/dropout_1/cond/dropout/random_uniform
+    prefix/dropout_1/cond/dropout/add
+    prefix/dropout_1/cond/dropout/Floor
+    prefix/dropout_1/cond/dropout/div
+    prefix/dropout_1/cond/dropout/mul
+    prefix/dropout_1/cond/Switch_1
+    prefix/dropout_1/cond/Merge
     prefix/flatten_1/Shape
     prefix/flatten_1/strided_slice/stack
     prefix/flatten_1/strided_slice/stack_1
@@ -1415,6 +1398,11 @@ for op in graph.get_operations():
     prefix/dense_3/MatMul
     prefix/dense_3/BiasAdd
     prefix/dense_3/Softmax
+    prefix/strided_slice/stack
+    prefix/strided_slice/stack_1
+    prefix/strided_slice/stack_2
+    prefix/strided_slice
+    prefix/output_node0
 
 
 
@@ -1430,10 +1418,10 @@ with tf.Session(graph=graph) as sess:
     ## note: we don't need to initialize/restore anything
     ## there are no vars in this graph, only hardcoded constants 
     y_out = sess.run(y, feed_dict={
-        x: testX[[500]] # < 45
+        x: testX[[100]] # < 45
     })
     
-    l = np.round(testY[[500]])
+    l = np.round(testY[[100]])
     print "label: " + str(l)
     z = (np.round(y_out)).astype(int)
     print "prediction: " + str(z)
@@ -1441,9 +1429,9 @@ with tf.Session(graph=graph) as sess:
     print "prediction correct? " + str(np.array_equal(l,z))
 ```
 
-    label: [[0 0 0 0 0 0 0 1 0 0 0 0]]
-    prediction: [[0 0 0 0 0 0 0 1 0 0 0 0]]
-    prediction correct? True
+    label: [[0 0 0 0 0 1 0]]
+    prediction: [[0 0 0 0 0 0 0 0 0 1 0 0]]
+    prediction correct? False
 
 
 ### Check mismatch between sensor readings of dataset and Android sensors
