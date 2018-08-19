@@ -8,7 +8,7 @@ from scipy import stats
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, LSTM, LSTMCell, Bidirectional, TimeDistributed, InputLayer, ConvLSTM2D
 from sklearn.model_selection import LeaveOneGroupOut
-
+import dill
 #from keras import backend as K
 from keras import optimizers
 #K.set_image_dim_ordering('th')
@@ -321,6 +321,8 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     print trainX.shape
 
     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), epochs=Epochs,batch_size=batchSize,verbose=2)
+    # dill.dump(history, open( "model_" + str(index) + "_history.p","wb"))
+
     score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
     print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
     print('Baseline ConvLSTM Error: %.2f%%' %(100-score[1]*100))
