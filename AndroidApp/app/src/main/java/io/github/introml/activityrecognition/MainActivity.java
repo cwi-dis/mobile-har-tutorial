@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if (values.size() == N_FEATURES * N_STEPS) {
 
-//                normalize();
+//                feature_normalize();
 
                 float[] arrVals = new float[N_FEATURES * N_STEPS];
                 for (int i = 0; i < arrVals.length; i++) {
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return array;
     }
 
-//    private void normalize()
+//    private void feature_normalize()
 //    {
 //        float x_m = 0.662868f; float y_m = 7.255639f; float z_m = 0.411062f;
 //        float x_s = 6.849058f; float y_s = 6.746204f; float z_s = 4.754109f;
@@ -206,11 +206,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-    private static float round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
-        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-        return bd.floatValue();
-    }
+//    private static float round(float d, int decimalPlace) {
+//        BigDecimal bd = new BigDecimal(Float.toString(d));
+//        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+//        return bd.floatValue();
+//    }
 
     private SensorManager getSensorManager() {
         return (SensorManager) getSystemService(SENSOR_SERVICE);

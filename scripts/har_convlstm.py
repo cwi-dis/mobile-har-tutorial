@@ -224,8 +224,6 @@ labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
 # trainY = labels
 # testY = labels_test
 
-
-
 # print "segments shape:" + str(segments.shape)
 # print "labels shape:" + str(labels.shape)
 # print "trainX shape: " + str(trainX.shape)
@@ -320,7 +318,7 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
         print(layer.name)
     print trainX.shape
 
-    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), epochs=Epochs,batch_size=batchSize,verbose=2)
+    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
     # dill.dump(history, open( "model_" + str(index) + "_history.p","wb"))
 
     score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)

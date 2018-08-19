@@ -6,7 +6,7 @@ Tasks:
 
 ## Dataset & sensors
 
-- experiment with different training dataset (e.g., WISDM Actitraker)
+- experiment with different training dataset (e.g., WISDM Actitracker)
 - collect Android test set with N subjects (e.g., find sensor logger in Google Play store)
 - compare sensor data statistics from Android and MotionNode access + gyr sensors
 - experiment with other variables like age
@@ -14,7 +14,7 @@ Tasks:
 ## Preprocessing
 
 - experiment / compare different window sizes
-- experiment with different types of sensor reading normalization (report statistics)
+- experiment with different types of sensor reading normalization (report statistics). e.g., feature normalization, orientation-invariant transformations, etc.
 - experiment with time series data augmentation
 
 ## Network choice & optimization
@@ -22,3 +22,8 @@ Tasks:
 - experiment with CNN only or LSTM only model
 - implement early stopping
 - implement grid search
+
+## App UI
+
+- adaptive UI: e.g., increase keyboard size while walking, adjust volume
+
