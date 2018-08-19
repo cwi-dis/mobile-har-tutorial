@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     protected void onResume() {
         super.onResume();
-        getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-        getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_GAME);
+        getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 10000, 10000);
+        getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_GYROSCOPE), 10000, 10000  );
 
     }
 
@@ -140,6 +140,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
             if (values.size() == N_FEATURES * N_STEPS) {
+
+//                normalize();
+
                 float[] arrVals = new float[N_FEATURES * N_STEPS];
                 for (int i = 0; i < arrVals.length; i++) {
                     arrVals[i] = values.get(i);
@@ -187,6 +190,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         return array;
     }
+
+//    private void normalize()
+//    {
+//        float x_m = 0.662868f; float y_m = 7.255639f; float z_m = 0.411062f;
+//        float x_s = 6.849058f; float y_s = 6.746204f; float z_s = 4.754109f;
+//
+//        for(int i = 0; i < N_STEPS; i++)
+//        {
+//            x.set(i,((x.get(i) - x_m)/x_s));
+//            y.set(i,((y.get(i) - y_m)/y_s));
+//            z.set(i,((z.get(i) - z_m)/z_s));
+//        }
+//    }
+
+
 
     private static float round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
