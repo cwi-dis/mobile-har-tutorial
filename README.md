@@ -95,7 +95,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 52599 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 51907 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -157,12 +157,22 @@ def readData(filePath):
     data = pd.read_csv(filePath,header = None, names=columnNames,na_values=';')
     return data[0:2000]
 
-## define function for feature normalization
+## feature normalization using standardization (or Z-score normalization)
 ## (feature - mean)/stdiv
-def featureNormalize(dataset):
-    mu = np.mean(dataset,axis=0)
-    sigma = np.std(dataset,axis=0)
-    return (dataset-mu)/sigma
+def featureNormalizeZscore(data):
+    mu = np.mean(data,axis=0)
+    sigma = np.std(data,axis=0)
+    return (data-mu)/sigma
+
+# tf.keras.utils.normalize(
+#     x,
+#     axis=-1,
+#     order=2
+# )
+    
+## compute Euclidean Norm
+def featureNormalizeEuclidean(data):
+    return np.sqrt(sum(data^2))
 
 ## defining the function to plot a single axis data
 def plotAxis(axis,x,y,title):
@@ -211,6 +221,7 @@ def segment_signal(data, window_size = 90):
                 labels = np.append(labels,stats.mode(data['activity'][start:end])[0][0])
             subjects = np.append(subjects,stats.mode(data['subject'][start:end])[0][0])
     return segments, labels, subjects
+
 ```
 
 
@@ -272,7 +283,6 @@ for i in range(840):
         subject_id.append(subject[i])
         
 df = pd.DataFrame({'subject':subject_id,'acc_x':acc_x,'acc_y':acc_y,'acc_z':acc_z,'gyr_x':gyr_x,'gyr_y':gyr_y,'gyr_z':gyr_z,'activity':act_label})                   
-# df_norm = pd.DataFrame({'acc_x':featureNormalize(acc_x),'acc_y':featureNormalize(acc_y),'acc_z':featureNormalize(acc_z),'gyr_x':featureNormalize(gyr_x),'gyr_y':featureNormalize(gyr_y),'gyr_z':featureNormalize(gyr_z),'activity':act_label})                   
 
 df = df[['subject','acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z','activity']]
 
@@ -726,6 +736,7 @@ print "Columns / features: " + str(numOfColumns)
 def Conv2D_LSTM_Model():
     model = Sequential()
     print (model.name)
+
     # adding the first convLSTM layer with 32 filters and 5 by 5 kernal size, using the rectifier as the activation function
     model.add(ConvLSTM2D(numFilters, (kernalSize1,kernalSize1),input_shape=(None, numOfRows, numOfColumns, 1),activation='relu', padding='same',return_sequences=True))
     print (model.input_shape)
