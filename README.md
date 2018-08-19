@@ -22,9 +22,12 @@ from keras import optimizers
 from keras import backend as K
 
 from sklearn import metrics
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, LeaveOneGroupOut
+# http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.LeaveOneGroupOut.html#sklearn.model_selection.LeaveOneGroupOut
+
 from scipy import stats
 import scipy.io
+import dill
 
 import pandas as pd
 import numpy as np
@@ -53,7 +56,7 @@ K.clear_session()
 
 
 ```python
-## Convert Jupyter notebook to a README for GitHub repo's main page
+## convert Jupyter notebook to a README for GitHub repo's main page
 !jupyter nbconvert --to markdown mobilehci2018_keras_har_tutorial.ipynb
 !mv mobilehci2018_keras_har_tutorial.md README.md
 ```
@@ -82,15 +85,15 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 48181 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 50131 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
 ```python
-## Check tensorflow version
+## check tensorflow version
 !python -W ignore -c 'import tensorflow as tf; print(tf.__version__)'  # for Python 2
 
-# gradle TF build repo
+## gradle TF build repo
 # https://mvnrepository.com/artifact/org.tensorflow/tensorflow-android/1.5.0-rc1
 ```
 
@@ -144,7 +147,7 @@ def readData(filePath):
     data = pd.read_csv(filePath,header = None, names=columnNames,na_values=';')
     return data[0:2000]
 
-## defining a function for feature normalization
+## define function for feature normalization
 ## (feature - mean)/stdiv
 def featureNormalize(dataset):
     mu = np.mean(dataset,axis=0)
@@ -178,11 +181,11 @@ def windows(data,size):
         yield int(start), int(start + size)
         start+= (size/2)    
 
-## our segmenrtation function to get streams of 90 samples in each timestep 
-def segment_signal_ucd(data, window_size = 90):
+## our segmentation function to get streams of 90 samples in each timestep 
+def segment_signal(data, window_size = 90):
     segments = np.empty((0,window_size,6))
     labels= np.empty((0))
-## print labels
+    subjects = np.empty((0))
 
     for (start, end) in windows(data['activity'],window_size):
         x = data['acc_x'][start:end]
@@ -196,16 +199,17 @@ def segment_signal_ucd(data, window_size = 90):
             segments = np.vstack([segments,np.dstack([x,y,z,p,q,r])])
             if labels is not None:
                 labels = np.append(labels,stats.mode(data['activity'][start:end])[0][0])
-    return segments, labels
+            subjects = np.append(subjects,stats.mode(data['subject'][start:end])[0][0])
+    return segments, labels, subjects
 ```
 
 
 ```python
-## read in the USC-HAD data
+## read in the USC-HAD data. here we use activity number since activities have missing/incorrect labels
 DIR = './data/USC-HAD/data/'
 
 # activity = []
-# subject = []
+subject = []
 # age = []
 act_num = []
 sensor_readings = []
@@ -216,7 +220,7 @@ def read_dir(directory):
             if name.endswith('.mat'):
                 mat = scipy.io.loadmat(os.path.join(path, name))
 #                 activity.append(mat['activity'])
-#                 subject.extend(mat['subject'])
+                subject.extend(mat['subject'])
 #                 age.extend(mat['age'])
                 sensor_readings.append(mat['sensor_readings'])
 
@@ -224,29 +228,30 @@ def read_dir(directory):
                     act_num.append('11')
                 else:
                     act_num.append(mat['activity_number'])
-    return act_num, sensor_readings
+    return subject, act_num, sensor_readings
 
-## UNCOMMENT to handle corrupt datapoint
+## Corrupt datapoint:
 # act_num[258] = '11'            
-act_num, sensor_readings = read_dir(DIR)
+subject, act_num, sensor_readings = read_dir(DIR)
 ```
 
 
 ```python
-## Get acc + gyr sensor readings and put in df (dataframe)
+## get acc + gyr sensor readings and put in df (dataframe)
 acc_x = []
 acc_y = []
 acc_z = []
-
 gyr_x = []
 gyr_y = []
 gyr_z = []
+
 act_label = []
+subject_id = []
 df = None
 
 for i in range(840):
     for j in sensor_readings[i]:
-        
+         
         acc_x.append(j[0]) # acc_x
         acc_y.append(j[1]) # acc_y
         acc_z.append(j[2]) # acc_z
@@ -254,9 +259,12 @@ for i in range(840):
         gyr_y.append(j[4]) # gyr_y
         gyr_z.append(j[5]) # gyr_z
         act_label.append(act_num[i])
+        subject_id.append(subject[i])
         
-df = pd.DataFrame({'acc_x':acc_x,'acc_y':acc_y,'acc_z':acc_z,'gyr_x':gyr_x,'gyr_y':gyr_y,'gyr_z':gyr_z,'activity':act_label})                   
-df = df[['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z','activity']]
+df = pd.DataFrame({'subject':subject_id,'acc_x':acc_x,'acc_y':acc_y,'acc_z':acc_z,'gyr_x':gyr_x,'gyr_y':gyr_y,'gyr_z':gyr_z,'activity':act_label})                   
+# df_norm = pd.DataFrame({'acc_x':featureNormalize(acc_x),'acc_y':featureNormalize(acc_y),'acc_z':featureNormalize(acc_z),'gyr_x':featureNormalize(gyr_x),'gyr_y':featureNormalize(gyr_y),'gyr_z':featureNormalize(gyr_z),'activity':act_label})                   
+
+df = df[['subject','acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z','activity']]
 
 df.loc[df['activity'] == '1', 'activity'] = 'Walking Forward'
 df.loc[df['activity'] == '2', 'activity'] = 'Walking Left'
@@ -271,15 +279,12 @@ df.loc[df['activity'] == '10', 'activity'] = 'Sleeping'
 df.loc[df['activity'] == '11', 'activity'] = 'Elevator Up'
 df.loc[df['activity'] == '12', 'activity'] = 'Elevator Down'
 
-## These are the 12 classes we want to recognize!
+## these are the 12 classes we want to recognize!
 df['activity'].unique() 
 
 ## print size of dataset
 print 'df size ' + str(len(df))
 ```
-
-    df size 2811490
-
 
 
 ```python
@@ -290,140 +295,35 @@ print 'df size ' + str(len(df))
 # df2.loc[df2['activity'] == 'Walking Forward', 'activity'] = 'Walking'
 # df2.loc[df2['activity'] == 'Walking Left', 'activity'] = 'Walking'
 # df2.loc[df2['activity'] == 'Walking Right', 'activity'] = 'Walking'
-
 ```
 
 
 ```python
 ## inspect the dataframe
-df[1:10]
+print df[1:10]
 ```
 
-
-
-
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>acc_x</th>
-      <th>acc_y</th>
-      <th>acc_z</th>
-      <th>gyr_x</th>
-      <th>gyr_y</th>
-      <th>gyr_z</th>
-      <th>activity</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>-0.657132</td>
-      <td>0.805976</td>
-      <td>-0.149374</td>
-      <td>0.692599</td>
-      <td>-0.428895</td>
-      <td>-0.506021</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.653698</td>
-      <td>0.809595</td>
-      <td>-0.153035</td>
-      <td>0.288852</td>
-      <td>0.375579</td>
-      <td>-0.504430</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.650265</td>
-      <td>0.809595</td>
-      <td>-0.149374</td>
-      <td>0.287940</td>
-      <td>0.374394</td>
-      <td>-0.101278</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.646831</td>
-      <td>0.805976</td>
-      <td>-0.149374</td>
-      <td>0.287031</td>
-      <td>0.373212</td>
-      <td>-0.502525</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.650265</td>
-      <td>0.809595</td>
-      <td>-0.149374</td>
-      <td>0.286124</td>
-      <td>-0.431087</td>
-      <td>-0.099380</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>-0.650265</td>
-      <td>0.809595</td>
-      <td>-0.149374</td>
-      <td>0.285221</td>
-      <td>0.373394</td>
-      <td>-0.500633</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>-0.653698</td>
-      <td>0.809595</td>
-      <td>-0.149374</td>
-      <td>-0.117240</td>
-      <td>-0.430905</td>
-      <td>-0.499058</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>-0.657132</td>
-      <td>0.809595</td>
-      <td>-0.149374</td>
-      <td>-0.116870</td>
-      <td>-0.027984</td>
-      <td>-0.095924</td>
-      <td>Sleeping</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>-0.653698</td>
-      <td>0.805976</td>
-      <td>-0.153035</td>
-      <td>0.285060</td>
-      <td>-0.429456</td>
-      <td>-0.497187</td>
-      <td>Sleeping</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+      subject     acc_x     acc_y     acc_z     gyr_x     gyr_y     gyr_z  \
+    1       2 -0.657132  0.805976 -0.149374  0.692599 -0.428895 -0.506021   
+    2       2 -0.653698  0.809595 -0.153035  0.288852  0.375579 -0.504430   
+    3       2 -0.650265  0.809595 -0.149374  0.287940  0.374394 -0.101278   
+    4       2 -0.646831  0.805976 -0.149374  0.287031  0.373212 -0.502525   
+    5       2 -0.650265  0.809595 -0.149374  0.286124 -0.431087 -0.099380   
+    6       2 -0.650265  0.809595 -0.149374  0.285221  0.373394 -0.500633   
+    7       2 -0.653698  0.809595 -0.149374 -0.117240 -0.430905 -0.499058   
+    8       2 -0.657132  0.809595 -0.149374 -0.116870 -0.027984 -0.095924   
+    9       2 -0.653698  0.805976 -0.153035  0.285060 -0.429456 -0.497187   
+    
+       activity  
+    1  Sleeping  
+    2  Sleeping  
+    3  Sleeping  
+    4  Sleeping  
+    5  Sleeping  
+    6  Sleeping  
+    7  Sleeping  
+    8  Sleeping  
+    9  Sleeping  
 
 
 ### Explore your dataset (through visualization)
@@ -433,6 +333,8 @@ df[1:10]
 ## explore your overal accel and gyro values: min, max, mean, and plot over time
 
 ''' 
+## USC-HAD Sensors
+
 From the UbiComp'12 paper:
 "Based on the above considerations, we use an off-the-shelf sensing platform called MotionNode to capture human activity signals 
 and build our dataset. MotionNode is a 6-DOF inertial measurement unit (IMU) specifically designed for human motion sensing 
@@ -440,9 +342,41 @@ applications (see Figure 2) [2]. Each MotionNode itself is a multi-modal sensor 
 3-axis gyroscope, and a 3-axis mag- netometer. The measurement range is ±6g and ±500dps for each axis of accelerometer and gyroscope 
 respectively. Although body limbs and extremities can exhibit up to ±12g in acceleration, points near the torso 
 and hip experience no more than ±6g range in acceleration [6]."
+
+• MotionNode is extremely small in size (35mm×35mm× 15mm) and lightweight enough (14g) to wear comfort- ably for long period of time. 
+This feature makes MotionN- ode unobtrusive and thus perfect as a wearable device.
+• Compared to the accelerometer and gyroscope embedded in the smartphones (e.g. iPhone 4G), the integrated sen- sors have higher 
+resolution (0.001g ± 10% for accelerom- eter, 0.5◦/second for gyroscope) and wider sensing ranges. In addition, MotionNode 
+is gyro-stablized and well cali- brated such that the readings are accurate and reliable.
+• The highest sampling rate can reach 100Hz. This sampling frequency is much higher than the one used in some of the existing 
+datasets [23] [21].
+
+**********************************************
+Section 1: Device Configuration
+**********************************************
+
+1. Device Type: MotionNode
+2. Sampling rate: 100Hz
+3. Accelerometer range: +-6g
+4. Gyroscope range: +-500dps
+
+For sensor_readings field, it consists of 6 readings:
+From left to right:
+1. acc_x, w/ unit g (gravity)
+2. acc_y, w/ unit g
+3. acc_z, w/ unit g
+4. gyro_x, w/ unit dps (degrees per second)
+5. gyro_y, w/ unit dps
+6. gyro_z, w/ unit dps
+
+============
+## Android Nexus 5 sensors
+
+For Android Nexus 5 sensor specs, check: https://www.bosch-sensortec.com/bst/products/all_products/bmi160
+
 '''
 
-## For Android Nexus 5 sensor specs, check: https://www.bosch-sensortec.com/bst/products/all_products/bmi160
+## explore your overall accel and gyro values: min, max, mean, and plot over time
 
 ## accelerometer 
 print 'acc_x'
@@ -466,6 +400,7 @@ print np.mean(df['acc_z'])
 plt.plot(df['acc_z'])
 plt.show()
 
+## gyroscope 
 print 'gyr_x'
 print min(df['gyr_x'])
 print max(df['gyr_x'])
@@ -550,40 +485,7 @@ plt.show()
 
 
 ```python
-## Check mismatch between sensor readings of dataset and Android sensors
-
-android_sit_sample = [0.30177248, 0.2778223, 0.29698244, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.2921924, 0.29698244, 0.30177248, 0.2778223, 0.2921924, 0.2921924, 0.2921924, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.3065625, 0.2921924, 0.2682422, 0.26345217, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.29698244, 0.28740236, 0.30177248, 0.2921924, 0.28261232, 0.28740236, 0.2682422, 0.28740236, 0.29698244, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.29698244, 0.2921924, 0.2921924, 0.30177248, 0.2921924, 0.28740236, 0.28261232, 0.31135255, 0.29698244, 0.28740236, 0.28740236, 0.2921924, 0.29698244, 0.29698244, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.3065625, 0.28740236, 0.28740236, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2778223, 0.2778223, 0.2921924, 0.3065625, 0.3065625, 0.28261232, 0.27303225, 0.3065625, 0.31135255, 0.29698244, 0.29698244, 0.3065625, 0.3065625, 0.28740236, 0.28261232, 0.3065625, 0.28261232, 0.29698244, 0.3065625, 0.31135255, 0.28740236, 0.2921924, 0.29698244, 0.2682422, 0.28261232, 0.30177248, 0.29698244, 0.28740236, 0.2921924, 0.29698244, 0.28261232, 0.2778223, 0.29698244, 0.28740236, 0.30177248, 0.28740236, 0.2921924, 0.29698244, 0.30177248, 0.30177248, 0.30177248, 0.30177248, 0.29698244, 0.27303225, 0.28740236, 0.30177248, 0.2921924, 0.27303225, 0.28740236, 0.27303225, 0.28261232, 0.29698244, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.28740236, 0.2778223, 0.3065625, 0.29698244, 0.28740236, 0.28740236, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.28740236, 0.28740236, 0.29698244, 0.2921924, 0.30177248, 0.29698244, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.2921924, 0.31135255, 0.29698244, 0.29698244, 0.31135255, 0.2921924, 0.2921924, 0.29698244, 0.28740236, 0.29698244, 0.30177248, 0.29698244, 0.30177248, 0.29698244, 0.28261232, 0.2921924, 0.2921924, 0.30177248, 0.29698244, 0.28261232, 0.28740236, 0.28261232, 0.3065625, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.29698244, 0.29698244, 0.2921924, 0.30177248, 0.2921924, 0.27303225, 0.28261232, 0.28261232, 0.2921924, 0.28740236, 0.28740236, 0.28740236, 0.30177248, 0.2778223, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.31135255, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.28740236, 0.29698244, 0.32572266, 0.3161426, 0.28261232, 0.29698244, 0.2921924, 0.31135255, 0.3161426, 0.28740236, 0.30177248, 0.2921924, 0.28740236, 0.30177248, 0.3065625, 0.2921924, 0.29698244, 0.28740236, 0.2921924, 0.28740236, 0.28261232, 0.29698244, 0.29698244, 0.2921924, 0.2921924, 0.28740236, 0.29698244, 0.29698244, 0.3065625, 0.2921924, 0.28740236, 0.27303225, 0.2778223, 0.28261232, 0.29698244, 0.2778223, 0.28261232, 0.30177248, 0.2921924, 0.32093263, 0.29698244, 0.29698244, 0.27303225, 0.28261232, 0.30177248, 0.31135255, 0.28261232, 0.33530274, 0.16286133, 0.23471193, 0.26345217, 0.2682422, 0.30177248, 0.28740236, 0.26345217, 0.2921924, 0.2921924, 0.2778223, 0.28740236, 0.28261232, 0.2682422, 0.2778223, 0.27303225, 0.2921924, 0.28261232, 0.2682422, 0.30177248, 0.27303225, 0.28740236, 0.28261232, 0.28261232, 0.2778223, 0.28740236, 0.28740236, 0.2921924, 0.28261232, 0.2682422, 0.2778223, 0.2921924, 0.28261232, 0.28261232, 0.2778223, 0.2778223, 0.2778223, 0.28261232, 0.28261232, 0.2682422, 0.28740236, 0.28261232, 0.26345217, 0.28261232, 0.2778223, 0.28261232, 0.2778223, 0.25387207, 0.2682422, 0.27303225, 0.2682422, 0.2921924, 0.2778223, 0.2921924, 0.28740236, 0.29698244, 0.28740236, 0.26345217, 0.2921924, 0.2778223, 0.2682422, 0.2682422, 0.2778223, 0.29698244, 0.30177248, 0.28261232, 0.29698244, 0.2921924, 0.27303225, 0.28740236, 0.2921924, 0.28261232, 0.29698244, 0.28261232, 0.2778223, 0.28740236, 0.28261232, 0.28740236, 0.28740236, 0.2778223, 0.28740236, 0.2778223, 0.29698244, 0.2778223, 0.2921924, 0.2778223, 0.27303225, 0.25866213, 0.28740236, 0.28261232, 0.28740236, 0.28261232, 0.28740236, 0.30177248, 0.28261232]
-len_sample = len(android_sit_sample)
-print 'size of sample to look at:' + str(len_sample)
-
-print 'android acc_x sample (recording) for sitting activity: '+ str(np.mean(android_sit_sample))
-plt.plot(android_sit_sample)
-plt.show()
-# print df[df["activity"] == "Sitting"]["acc_x"]
-sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
-print 'usc-had dataset acc_x sample for sitting activity: '+ str(np.mean(sit_df_acc_x))
-plt.plot(sit_df_acc_x)
-plt.show()
-```
-
-    size of sample to look at:348
-    android sample for acc_x: 0.28942573997126436
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
-
-
-    usc-had dataset sample for acc_x: 0.923923912233
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
-
-
-
-```python
-## setup a plots dir
+## set up a plots dir
 plot_dir = './plots/'
 
 ## two functions below to plot your data, and save them to disk
@@ -613,68 +515,55 @@ def plot_datasets(df,i=0,j=1000):
     plot_activity("Elevator Up", df,i,j)
     plot_activity("Elevator Down", df,i,j)
 
-## in case you have collapsed categories
-# def plot_datasets2(df,i=1000):
-#     plot_activity("Walking", df,i)
-#     plot_activity("Running", df,i)
-#     plot_activity("Jumping Up", df,i)
-#     plot_activity("Sitting", df,i)
-#     plot_activity("Standing", df,i)
-#     plot_activity("Sleeping", df,i)
-#     plot_activity("Elevator Up", df,i)
-#     plot_activity("Elevator Down", df,i)
-    
 plot_datasets(df)
-
-
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_0.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_6.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_8.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_10.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
 
 
 
@@ -685,7 +574,7 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
 
 
 
@@ -716,79 +605,70 @@ print df['activity'].value_counts()
 
 
 ```python
+## UNCOMMENT below line for segmenting the signal in overlapping windows of 90 samples with 50% overlap
+# segments, labels, subjects = segment_signal(df)
 
-## UNCOMMENT for segmenting the signal in overlapping windows of 90 samples with 50% overlap
-# segments, labels = segment_signal_ucd(df)
-
-## COMMENT below segments + labels files if you want to segment afresh 
-
-## open a file, where you stored the pickled data
-segments = open('./data/segments_90.p', 'rb')
-labels = open('./data/labels_90.p','rb')
-segments = pickle.load(segments)
-labels = pickle.load(labels)
+## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data
+segments = pickle.load(open('./data/segments_90_logo.p', 'rb'))
+labels = pickle.load(open('./data/labels_90_logo.p','rb'))
+subjects = pickle.load(open('./data/subjects_90_logo.p','rb'))
 
 ## dump information to that file (UNCOMMENT to save fresh segmentation!)
 # pickle.dump(segments, open( "./data/segments_90.p","wb"))
 # pickle.dump(labels, open( "./data/labels_90.p","wb"))
+# pickle.dump(subjects, open( "subjects_90_logo.p","wb"))
 
-## categorically defining the classes of the activities
-labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
+# segments, labels, subjects = segment_signal(df)
+groups = np.array(subjects)
+
+logo = LeaveOneGroupOut()
+logo.get_n_splits(segments, labels, groups)
 
 ## defining parameters for the input and network layers
 ## we are treating each segmeent or chunk as a 2D image (90 X 3)
 numOfRows = segments.shape[1]
 numOfColumns = segments.shape[2]
+
+## reshaping the data for network input
+reshapedSegments = segments.reshape(segments.shape[0], numOfRows, numOfColumns,1)
+## (observations, timesteps, features (x,y,z), channels)
+
+# categorically defining the classes of the activities
+labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
+```
+
+    1957
+    266
+    1957
+    266
+
+
+
+```python
+## ConvLSTM net hyperparameters
+
 numChannels = 1
 numFilters = 128 # number of filters in Conv2D layer
-
-## kernal size of the Conv2D layer
+# kernal size of the Conv2D layer
 kernalSize1 = 2
-
-## max pooling window size
+# max pooling window size
 poolingWindowSz = 2
-
-## number of filters in fully connected layers
+# number of filters in fully connected layers
 numNueronsFCL1 = 128
 numNueronsFCL2 = 128
-
-## split ratio for test and validation
-trainSplitRatio = 0.8
-
-## number of epochs 
+# number of epochs
 Epochs = 20
-
-## batchsize
+# batchsize
 batchSize = 10
+# number of total clases
+numClasses = labels.shape[1]
+# dropout ratio for dropout layer
+dropOutRatio = 0.2
 
 ## number of total clases
 numClasses = labels.shape[1]
 print labels.shape
 print numClasses
-
-## dropout ratio for dropout layer
-dropOutRatio = 0.2
-
-## reshaping the data for network input
-reshapedSegments = segments.reshape(segments.shape[0], numOfRows, numOfColumns,1)
-
-## splitting in training and testing data
-trainSplit = np.random.rand(len(reshapedSegments)) < trainSplitRatio
-trainX = reshapedSegments[trainSplit]
-testX = reshapedSegments[~trainSplit]
-trainX = np.nan_to_num(trainX)
-testX = np.nan_to_num(testX)
-trainY = labels[trainSplit]
-testY = labels[~trainSplit]
-
-print "segments shape:" + str(segments.shape)
-print "labels shape:" + str(labels.shape)
-print "trainX shape: " + str(trainX.shape)
-print "trainY shape: " + str(trainY.shape)
-print "testX shape: " + str(testX.shape)
-print "testY shape: " + str(testY.shape)
-
-## (observations, timesteps, features (x,y,z), channels)
 
 # k = []
 
@@ -814,10 +694,6 @@ print "testY shape: " + str(testY.shape)
 ```python
 print "segments shape:" + str(segments.shape)
 print "labels shape:" + str(labels.shape)
-print "trainX shape: " + str(trainX.shape)
-print "trainY shape: " + str(trainY.shape)
-print "testX shape: " + str(testX.shape)
-print "testY shape: " + str(testY.shape)
 print "\n"
 print "Rows / Timesteps: " + str(numOfRows)
 print "Columns / features: " + str(numOfColumns)
@@ -825,15 +701,10 @@ print "Columns / features: " + str(numOfColumns)
 ## key:
 ## Conv2D: (observations, timesteps, features (acc + gyro), channels)
 ## LSTM: (batch size, observations, timesteps, features (acc + gyro), channels)
-
 ```
 
-    segments shape:(62476, 90, 6)
-    labels shape:(62476, 12)
-    trainX shape: (50009, 90, 6, 1)
-    trainY shape: (50009, 12)
-    testX shape: (12467, 90, 6, 1)
-    testY shape: (12467, 12)
+    segments shape:(2223, 90, 6)
+    labels shape:(2223, 7)
     
     
     Rows / Timesteps: 90
@@ -842,33 +713,11 @@ print "Columns / features: " + str(numOfColumns)
 
 
 ```python
-## shape of data to feed frozen model later in Android code
-print testX[[1]].shape
-```
-
-    (1, 90, 6, 1)
-
-
-
-```python
-## test reshape for ConvLSTM
-print np.expand_dims(testY,1).shape
-print trainX.shape
-
-# print trainX.reshape((None,50094, 90, 6, 1))
-```
-
-    (12467, 1, 12)
-    (50009, 90, 6, 1)
-
-
-
-```python
 def Conv2D_LSTM_Model():
     model = Sequential()
     print (model.name)
     # adding the first convLSTM layer with 32 filters and 5 by 5 kernal size, using the rectifier as the activation function
-    model.add(ConvLSTM2D(numFilters, (kernalSize1,kernalSize1),input_shape=(None, numOfRows, numOfColumns, 1),activation='relu', padding='same',return_sequences=True,name="INPUT"))
+    model.add(ConvLSTM2D(numFilters, (kernalSize1,kernalSize1),input_shape=(None, numOfRows, numOfColumns, 1),activation='relu', padding='same',return_sequences=True))
     print (model.input_shape)
     print (model.output_shape)
     print (model.name)
@@ -898,7 +747,7 @@ def Conv2D_LSTM_Model():
     print (model.output_shape)
 
     ## adding softmax layer for the classification
-    model.add(Dense(numClasses, activation='softmax', name="OUTPUT"))
+    model.add(Dense(numClasses, activation='softmax'))
     print (model.output_shape)
     print (model.name)
 
@@ -908,60 +757,62 @@ def Conv2D_LSTM_Model():
     return model
 ```
 
-### Train your network
+### Train, evaluate & save your network
 
 
 ```python
-## Train the network!
+## Leave One Group Out for train-test split, and train the network!
+
+## reset and initialize graph
 tf.get_default_graph()
 
-model = Conv2D_LSTM_Model()
-for layer in model.layers:
-    print(layer.name)
-print trainX.shape
-model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_split=1-trainSplitRatio,epochs=1,batch_size=batchSize,verbose=2)
-score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
-print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
-print('Baseline ConvLSTM Error: %.2f%%' %(100-score[1]*100))
+cvscores = []
+
+for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
+
+    print "Training on fold " + str(index+1) + "/14..."
+
+    # print("TRAIN:", train_index, "TEST:", test_index)
+    trainX, testX = reshapedSegments[train_index], reshapedSegments[test_index]
+    trainY, testY = labels[train_index], labels[test_index]
+    # print(np.nan_to_num(trainX), np.nan_to_num(testX), trainY, testY)
+
+    ## clear model, and create it
+    model = None
+    model = Conv2D_LSTM_Model()
+
+    for layer in model.layers:
+        print(layer.name)
+    print trainX.shape
+
+    ## fit the model
+    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), epochs=Epochs,batch_size=batchSize,verbose=2)
+    
+#     ## save the model histories
+#     dill.dump(history, open( "./history/model_" + str(index) + "_history.p","wb"))
+
+    ## evaluate the model
+    score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
+    print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
+    print('Baseline ConvLSTM Error: %.2f%%' %(100-score[1]*100))
+    cvscores.append(score[1] * 100)
+
+print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 
 ## Save your model!
-model.save('model_hcd_test.h5')
-model.save_weights('model_weights_test.h5')
-# np.save('groundTruth_test_lstm.npy',np.expand_dims(testY,1))
-# np.save('testData_test_lstm.npy',np.expand_dims(testX,1))
+model.save('model_had_lstm_logo.h5')
+model.save_weights('model_weights_had_lstm_logo.h5')
+np.save('groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
+np.save('testData_had_lstm_logo.npy',np.expand_dims(testX,1))
 
 ## write to JSON, in case you wanrt to work with that data format later when inspecting your model
 with open("./data/model_hcd_test.json", "w") as json_file:
-  json_file.write(model.to_json())
+    json_file.write(model.to_json())
 
+## write cvscores to file
+with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
+    cvs_file.write("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 ```
-
-    sequential_3
-    (None, None, 90, 6, 128)
-    sequential_3
-    (None, None, 45, 3, 128)
-    (None, None, 45, 3, 128)
-    (None, None, 17280)
-    (None, None, 128)
-    (None, None, 128)
-    (None, None, 128)
-    (None, None, 12)
-    sequential_3
-    INPUT
-    time_distributed_7
-    dropout_3
-    time_distributed_8
-    dense_5
-    dense_6
-    time_distributed_9
-    OUTPUT
-    (49953, 90, 6, 1)
-    Train on 39962 samples, validate on 9991 samples
-    Epoch 1/1
-     - 1666s - loss: 0.7321 - acc: 0.7314 - val_loss: 0.7805 - val_acc: 0.7287
-    acc: 78.38%
-    Baseline ConvLSTM Error: 21.62%
-
 
 
 ```python
@@ -971,12 +822,33 @@ print (model.input_shape)
 
 
 ```python
+## shape of data to feed frozen model later in Android code
+print testX[[1]].shape
+```
+
+    (1, 90, 6, 1)
+
+
+
+```python
+## DEPREC: reshape your data for ConvLSTM model input
+
 # trainX = np.expand_dims(trainX,0)
 # testX = np.expand_dims(testX,0)
 
 # trainY = np.expand_dims(trainY,0)
 # testY = np.expand_dims(testY,0)
+
+## test reshape for ConvLSTM
+# print np.expand_dims(testY,1).shape
+# print trainX.shape
+
+# print trainX.reshape((None,50094, 90, 6, 1))
 ```
+
+    (12467, 1, 12)
+    (50009, 90, 6, 1)
+
 
 ### Evaluate model, and plot confusion matrix + acc/loss graphs
 
@@ -986,10 +858,11 @@ print (model.input_shape)
 # -*- coding: utf-8 -*-
 """
 Evaluate a pretrained model saved as *.h5 using 'testData_X.npy'
-and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentag. Also generates a png file for the confusion matrix.
-Based on work by Muhammad Shahnawaz
+and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentage. Also generates a png file for the confusion matrix.
+Based on work by Muhammad Shahnawaz.
 """
-## defining a function for plotting the confusion matrix
+
+## define a function for plotting the confusion matrix
 ## takes cmNormalized
 os.environ['QT_PLUGIN_PATH'] = ''
 def plot_cm(cM, labels,title):
@@ -1027,15 +900,15 @@ def plot_cm(cM, labels,title):
     fig.savefig(title +'.png')
     
 ## loading the pretrained model
-model = load_model('model_ucd.h5')
+model = load_model('./data/model_ucd.h5')
 
 ## load weights into new model
-model.load_weights("model_weights_ucd.h5")
+model.load_weights("./data/model_weights_ucd.h5")
 print("Loaded model from disk")
 
 ## loading the testData and groundTruth data
-test_x = np.load('testData_ucd.npy')
-groundTruth = np.load('groundTruth_ucd.npy')
+test_x = np.load('./data/testData_ucd.npy')
+groundTruth = np.load('./data/groundTruth_ucd.npy')
 
 ## evaluate loaded model on test data
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -1067,10 +940,9 @@ cm = metrics.confusion_matrix(groundTruthClass,predictedClass)
 print cm
 
 ## plotting the confusion matrix
-plot_cm(cm, labels,'confusion_matrix_90')
+plot_cm(cm, labels,'./plots/confusion_matrix_90_')
 
 print model.summary()
-
 
 ```
 
@@ -1127,29 +999,19 @@ print model.summary()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_29_1.png)
 
 
 
 ```python
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-# score = model.evaluate(test_x,groundTruth,verbose=2)
-history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
+## plot acc and loss plot
 
-## loading the pretrained model
-# history = load_model('model_ucd.h5')
-
-## load weights into new model
-# model.load_weights("model_weights_ucd.h5")
-
-# history = model.fit(x_test, y_test, nb_epoch=10, validation_split=0.2, shuffle=True)
-
-model.test_on_batch(test_x, testY)
-model.metrics_names
-
+## load model history (models 1-14)
+history = pickle.load(open('./history/model_1_history.p','rb'))
 
 print(history.history.keys())
-##  "Accuracy"
+
+## plot train+val accuracy
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
 plt.title('model accuracy')
@@ -1157,8 +1019,9 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
+plt.savefig('./plots/acc_plot_logo.pdf', bbox_inches='tight')
 
-## "Loss"
+## plot train+val loss
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('model loss')
@@ -1166,32 +1029,62 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
+plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight'))
 ```
 
 
     ---------------------------------------------------------------------------
 
-    NameError                                 Traceback (most recent call last)
+    ValueError                                Traceback (most recent call last)
 
-    <ipython-input-59-d27f64eb81b7> in <module>()
-    ----> 1 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-          2 # score = model.evaluate(test_x,groundTruth,verbose=2)
-          3 history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
-          4 
-          5 ## loading the pretrained model
+    <ipython-input-553-83b95a3d407c> in <module>()
+          6 # score = model.evaluate(test_x,groundTruth,verbose=2)
+          7 
+    ----> 8 history = model.fit(trainX,trainY, validation_split=1-trainSplitRatio,epochs=3,batch_size=batchSize,verbose=2, shuffle=True)
+          9 
+         10 
 
 
-    NameError: name 'model' is not defined
+    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/models.pyc in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
+       1000                               initial_epoch=initial_epoch,
+       1001                               steps_per_epoch=steps_per_epoch,
+    -> 1002                               validation_steps=validation_steps)
+       1003 
+       1004     def evaluate(self, x=None, y=None,
+
+
+    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
+       1628             sample_weight=sample_weight,
+       1629             class_weight=class_weight,
+    -> 1630             batch_size=batch_size)
+       1631         # Prepare validation data.
+       1632         do_validation = False
+
+
+    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in _standardize_user_data(self, x, y, sample_weight, class_weight, check_array_lengths, batch_size)
+       1478                                     output_shapes,
+       1479                                     check_batch_axis=False,
+    -> 1480                                     exception_prefix='target')
+       1481         sample_weights = _standardize_sample_weights(sample_weight,
+       1482                                                      self._feed_output_names)
+
+
+    /Users/aelali/anaconda/lib/python2.7/site-packages/keras/engine/training.pyc in _standardize_input_data(data, names, shapes, check_batch_axis, exception_prefix)
+        121                             ': expected ' + names[i] + ' to have shape ' +
+        122                             str(shape) + ' but got array with shape ' +
+    --> 123                             str(data_shape))
+        124     return data
+        125 
+
+
+    ValueError: Error when checking target: expected dense_3 to have shape (12,) but got array with shape (7,)
 
 
 
 ```python
 # history.history['loss']
-print history.model.evaluate(testX,testY,verbose=3)
+# print history.model.evaluate(testX,testY,verbose=3)
 ```
-
-    [1.8351253166976615, 0.35781952472703915]
-
 
 ### Freeze and inspect Keras model graphs
 
@@ -1219,7 +1112,7 @@ def print_graph_nodes(filename):
 
 K.clear_session()
 
-## This was created with @warptime's help. Thank you!
+## this was created with @warptime's help. Thank you!
 
 saved_model_path = "./tensorflow_pb_models/model_hcd_test.h5"
 
@@ -1298,7 +1191,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
                                                       output_names, freeze_var_names)
         return frozen_graph
 
-## Create, compile and train model...
+## create, compile and train model
 K.set_learning_phase(0)
 
 # model = "model_ucd.h5"
@@ -1322,13 +1215,13 @@ tf.train.write_graph(frozen_graph, "./tensorflow_pb_models/", "ucd_model_test2.p
 
 
 ```python
-## Method 2 inspect output
+## method 2 inspect output
 print_graph_nodes("./tensorflow_pb_models/ucd_model_test2.pb")
 ```
 
 
 ```python
-## Freeze graphs: Method 3 - using freeze_graph.py
+## freeze graphs: Method 3 - using freeze_graph.py
 
 K.clear_session()
 
@@ -1363,25 +1256,25 @@ saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
 
 
 ```python
-## Method 3 inspect output
+## method 3 inspect output
 print_graph_nodes("./tensorflow_pb_models/ucd_keras_frozen3_test.pb")
 ```
 
 
 ```python
-## Freeze graphs: Method 4
+## freeze graphs: Method 4
 
 model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
 # model.load_weights("model_weights_ucd.h5")
  
-## All new operations will be in test mode from now on
+## all new operations will be in test mode from now on
 K.set_learning_phase(0)
  
-## Serialize the model and get its weights, for quick re-building
+## serialize the model and get its weights, for quick re-building
 config = model.get_config()
 weights = model.get_weights()
  
-## Re-build a model where the learning phase is now hard-coded to 0
+## re-build a model where the learning phase is now hard-coded to 0
 new_model = Sequential.from_config(config)
 new_model.set_weights(weights)
  
@@ -1391,7 +1284,7 @@ checkpoint_state_name = "checkpoint_state"
 input_graph_name = "input_graph.pb"
 output_graph_name = "output_graph.pb"
  
-## Temporary save graph to disk without weights included
+## temporary save graph to disk without weights included
 saver = tf.train.Saver()
 checkpoint_path = saver.save(K.get_session(), checkpoint_prefix, global_step=0, latest_filename=checkpoint_state_name)
 tf.train.write_graph(K.get_session().graph, temp_dir, input_graph_name)
@@ -1405,7 +1298,7 @@ filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(temp_dir, output_graph_name)
 clear_devices = False
  
-## Embed weights inside the graph and save to disk
+## embed weights inside the graph and save to disk
 freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
                           input_binary, checkpoint_path,
                           output_node_names, restore_op_name,
@@ -1422,7 +1315,7 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
 
 
 ```python
-## Visualize using tensorboard
+## visualize using tensorboard
 import webbrowser
 
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -1431,7 +1324,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 ## convert the model to tensorboard viz
 !python -W ignore /Users/aelali/anaconda/lib/python2.7/site-packages/tensorflow/python/tools/import_pb_to_tensorboard.py --model_dir ~/Desktop/HAR-CNN-Keras/tensorflow_pb_models/model_ucd.h5.pb --log_dir /tmp/tensorflow_logdir 
 
-## UNCOMMEMENT to run tensorboard on stated logdir
+## UNCOMMENT to run tensorboard on stated logdir
 # !tensorboard --logdir /tmp/tensorflow_logdir
 
 ## go to tensorboard in your browser
@@ -1455,26 +1348,28 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 ```python
+## define a function to load the frozen graph
+
 def load_graph(frozen_graph_filename):
-    ## We load the protobuf file from the disk and parse it to retrieve the unserialized graph_def
+    ## load the protobuf file from the disk and parse it to retrieve the unserialized graph_def
     with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
 
-    ## Then, we import the graph_def into a new Graph and returns it 
+    ## import the graph_def into a new Graph and returns it 
     with tf.Graph().as_default() as graph:
-        ## The name var will prefix every op/nodes in your graph
-        ## Since we load everything in a new graph, this is not needed
+        ## graph var will prefix every op/nodes in your graph
+        ## since we load everything in a new graph, this is not needed
         tf.import_graph_def(graph_def, name="prefix")
     return graph
 ```
 
 
 ```python
-## We use our "load_graph" function
+## load the graph using the "load_graph" function
 graph = load_graph("/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/ucd_keras_frozen3.pb")
 
-## We can verify that we can access the list of operations in the graph
+## verify that we can access the list of operations in the graph
 for op in graph.get_operations():
     print(op.name)    
 ```
@@ -1524,14 +1419,16 @@ for op in graph.get_operations():
 
 
 ```python
-# Get the input and output nodes 
+## now test if the frozen model performs predictions as intended
+
+## get the input and output nodes 
 x = graph.get_tensor_by_name('prefix/conv2d_1_input:0')
 y = graph.get_tensor_by_name('prefix/dense_3/Softmax:0')
 
-## Launch tf session
+## launch tf session
 with tf.Session(graph=graph) as sess:
-    ## Note: we don't need to initialize/restore anything
-    ## There is no Variables in this graph, only hardcoded constants 
+    ## note: we don't need to initialize/restore anything
+    ## there are no vars in this graph, only hardcoded constants 
     y_out = sess.run(y, feed_dict={
         x: testX[[500]] # < 45
     })
@@ -1547,4 +1444,182 @@ with tf.Session(graph=graph) as sess:
     label: [[0 0 0 0 0 0 0 1 0 0 0 0]]
     prediction: [[0 0 0 0 0 0 0 1 0 0 0 0]]
     prediction correct? True
+
+
+### Check mismatch between sensor readings of dataset and Android sensors
+
+
+```python
+## USC-HAD dataset inspect
+
+len_sample = len(df)
+
+# print df[df["activity"] == "Sitting"]["acc_x"]
+usc_sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
+usc_sit_df_acc_y = df[df["activity"] == "Sitting"]["acc_y"][0:len_sample]
+usc_sit_df_acc_z = df[df["activity"] == "Sitting"]["acc_z"][0:len_sample]
+usc_sit_df_gyr_x = df[df["activity"] == "Sitting"]["gyr_x"][0:len_sample]
+usc_sit_df_gyr_y = df[df["activity"] == "Sitting"]["gyr_y"][0:len_sample]
+usc_sit_df_gyr_z = df[df["activity"] == "Sitting"]["gyr_z"][0:len_sample]
+
+
+print 'sitting mean usc-had acc_x: '+ str(np.mean(usc_sit_df_acc_x))
+print 'sitting std usc-had acc_x: '+ str(np.std(usc_sit_df_acc_x))
+
+print 'sitting mean usc-had acc_y: '+ str(np.mean(usc_sit_df_acc_y))
+print 'sitting std usc-had acc_y: '+ str(np.std(usc_sit_df_acc_y))
+
+print 'sitting mean usc-had acc_z: '+ str(np.mean(usc_sit_df_acc_z))
+print 'sitting std usc-had acc_z: '+ str(np.std(usc_sit_df_acc_z))
+
+print 'sitting mean usc-had gyr_x: '+ str(np.mean(usc_sit_df_acc_z))
+print 'sitting std usc-had gyr_x: '+ str(np.std(usc_sit_df_acc_z))
+
+print 'sitting mean usc-had gyr_y: '+ str(np.mean(usc_sit_df_acc_z))
+print 'sitting std usc-had gyr_y: '+ str(np.std(usc_sit_df_gyr_y))
+
+print 'sitting mean usc-had gyr_z: '+ str(np.mean(usc_sit_df_gyr_z))
+print 'sitting std usc-had gyr_z: '+ str(np.std(usc_sit_df_gyr_z))
+
+
+# print 'usc-had dataset acc_x sample for sitting activity: '+ str(np.mean(sit_df_acc_x))
+plt.plot(usc_sit_df_acc_x)
+plt.show()
+plt.plot(usc_sit_df_acc_y)
+plt.show()
+plt.plot(usc_sit_df_acc_z)
+plt.show()
+plt.plot(usc_sit_df_gyr_x)
+plt.show()
+plt.plot(usc_sit_df_gyr_y)
+plt.show()
+plt.plot(usc_sit_df_gyr_z)
+plt.show()
+```
+
+    2811490
+    sitting mean usc-had acc_x: 0.827551787045
+    sitting std usc-had acc_x: 0.08702539053
+    sitting mean usc-had acc_y: 0.471513915458
+    sitting std usc-had acc_y: 0.17719417357
+    sitting mean usc-had acc_z: 0.192641908857
+    sitting std usc-had acc_z: 0.170583849396
+    sitting mean usc-had gyr_x: 0.192641908857
+    sitting std usc-had gyr_x: 0.170583849396
+    sitting mean usc-had gyr_y: 0.192641908857
+    sitting std usc-had gyr_y: 3.50554266571
+    sitting mean usc-had gyr_z: 0.0909091543985
+    sitting std usc-had gyr_z: 4.13647140758
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_2.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_3.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_4.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_5.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_6.png)
+
+
+
+```python
+## Android sensor reading samples inspect
+
+acc_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Accelerometer.csv')[100:400]
+gyr_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Gyroscope.csv')[100:400]
+
+sit_acc_x = acc_sit_android["X"]
+sit_acc_y = acc_sit_android["Y"]
+sit_acc_z = acc_sit_android["Z"]
+sit_gyr_x = gyr_sit_android["X"]
+sit_gyr_y = gyr_sit_android["Y"]
+sit_gyr_z = gyr_sit_android["Z"]
+
+print 'sitting android acc_x size: '+ str(len(sit_acc_x))
+
+print 'sitting mean android acc_x: '+ str(np.mean(sit_acc_x))
+print 'sitting std android acc_x: '+ str(np.std(sit_acc_x))
+
+print 'sitting mean android acc_y: '+ str(np.mean(sit_acc_y))
+print 'sitting std android acc_y: '+ str(np.std(sit_acc_y))
+
+print 'sitting mean android acc_z: '+ str(np.mean(sit_acc_z))
+print 'sitting std android acc_z: '+ str(np.std(sit_acc_z))
+
+print 'sitting mean android gyr_x: '+ str(np.mean(sit_gyr_x))
+print 'sitting std android gyr_x: '+ str(np.std(sit_gyr_x))
+
+print 'sitting mean android gyr_y: '+ str(np.mean(sit_gyr_y))
+print 'sitting std android gyr_y: '+ str(np.std(sit_gyr_y))
+
+print 'sitting mean android gyr_z: '+ str(np.mean(sit_gyr_z))
+print 'sitting std android gyr_z: '+ str(np.std(sit_gyr_z))
+
+
+plt.plot(sit_acc_x)
+plt.show()
+plt.plot(sit_acc_y)
+plt.show()
+plt.plot(sit_acc_z)
+plt.show()
+plt.plot(sit_gyr_x)
+plt.show()
+plt.plot(sit_gyr_y)
+plt.show()
+plt.plot(sit_gyr_z)
+plt.show()
+```
+
+    sitting android acc_x size: 300
+    sitting mean android acc_x: 5.79502145433
+    sitting std android acc_x: 0.154638607089
+    sitting mean android acc_y: 3.52781603567
+    sitting std android acc_y: 0.358853869752
+    sitting mean android acc_z: 7.55052292033
+    sitting std android acc_z: 0.238393949719
+    sitting mean android gyr_x: -0.0190292144043
+    sitting std android gyr_x: 0.0754486040928
+    sitting mean android gyr_y: -0.00895877374873
+    sitting std android gyr_y: 0.0466460458106
+    sitting mean android gyr_z: -0.0209356976821
+    sitting std android gyr_z: 0.0733560528854
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_2.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_3.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_4.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_5.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_6.png)
 
