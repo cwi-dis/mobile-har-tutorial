@@ -40,6 +40,7 @@ def readData(filePath):
     columnNames = ['user_id','activity','timestamp','x-axis','y-axis','z-axis']
     data = pd.read_csv(filePath,header = None, names=columnNames,na_values=';')
     return data[0:2000]
+
 # defining a function for feature normalization
 # (feature - mean)/stdiv
 
@@ -318,7 +319,7 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
         print(layer.name)
     print trainX.shape
 
-    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
+    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
     # dill.dump(history, open( "model_" + str(index) + "_history.p","wb"))
 
     score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
