@@ -1587,8 +1587,8 @@ plt.show()
 ```python
 ## Android sensor reading samples inspect
 
-acc_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Accelerometer.csv')[100:400]
-gyr_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Gyroscope.csv')[100:400]
+acc_sit_android = pd.read_csv('./data/android_sitting_acc.csv')[100:400]
+gyr_sit_android = pd.read_csv('./data/android_sitting_gyr.csv')[100:400]
 
 sit_acc_x = acc_sit_android['X']
 sit_acc_y = acc_sit_android['Y']
