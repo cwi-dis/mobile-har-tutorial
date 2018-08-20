@@ -127,7 +127,7 @@ K.clear_session()
 ## wget UCD dataset + all .npy files and dump into ./data dir
 
 # !mkdir data
-!wget -P ./data "http://abdoelali.com/data/mobilehci2018_tutorial_data.zip"
+!wget -P ./data 'http://abdoelali.com/data/mobilehci2018_tutorial_data.zip'
 ```
 
     --2018-08-13 17:26:04--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
@@ -146,9 +146,9 @@ K.clear_session()
 
 ```python
 ## unzip and delete files
-with zipfile.ZipFile("./data/mobilehci2018_tutorial_data.zip","r") as zipref:
-    zipref.extractall("./data/")
-os.remove("./data/mobilehci2018_tutorial_data.zip")
+with zipfile.ZipFile('./data/mobilehci2018_tutorial_data.zip','r') as zipref:
+    zipref.extractall('./data/')
+os.remove('./data/mobilehci2018_tutorial_data.zip')
 ```
 
 ### Preprocressing
@@ -554,18 +554,18 @@ def plot_activity(activity, df,i=0, j=100):
     plt.savefig(plot_dir + str(activity) + '.pdf',bbox_inches='tight')
         
 def plot_datasets(df,i=0,j=1000):
-    plot_activity("Walking Forward", df,i,j)
-    plot_activity("Walking Left", df,i,j)
-    plot_activity("Walking Right", df,i,j)
-    plot_activity("Walking Upstairs", df,i,j)
-    plot_activity("Walking Downstairs", df,i,j)
-    plot_activity("Running Forward", df,i,j)
-    plot_activity("Jumping Up", df,i,j)
-    plot_activity("Sitting", df,i,j)
-    plot_activity("Standing", df,i,j)
-    plot_activity("Sleeping", df,i,j)
-    plot_activity("Elevator Up", df,i,j)
-    plot_activity("Elevator Down", df,i,j)
+    plot_activity('Walking Forward', df,i,j)
+    plot_activity('Walking Left', df,i,j)
+    plot_activity('Walking Right', df,i,j)
+    plot_activity('Walking Upstairs', df,i,j)
+    plot_activity('Walking Downstairs', df,i,j)
+    plot_activity('Running Forward', df,i,j)
+    plot_activity('Jumping Up', df,i,j)
+    plot_activity('Sitting', df,i,j)
+    plot_activity('Standing', df,i,j)
+    plot_activity('Sleeping', df,i,j)
+    plot_activity('Elevator Up', df,i,j)
+    plot_activity('Elevator Down', df,i,j)
 
 plot_datasets(df)
 ```
@@ -661,9 +661,9 @@ labels = pickle.load(open('./data/labels_90_logo.p','rb'))
 subjects = pickle.load(open('./data/subjects_90_logo.p','rb'))
 
 ## dump information to that file (UNCOMMENT to save fresh segmentation!)
-# pickle.dump(segments, open( "./data/segments_90_logo.p","wb"))
-# pickle.dump(labels, open( "./data/labels_90_logo.p","wb"))
-# pickle.dump(subjects, open( "./data/subjects_90_logo.p","wb"))
+# pickle.dump(segments, open( './data/segments_90_logo.p','wb'))
+# pickle.dump(labels, open( './data/labels_90_logo.p','wb'))
+# pickle.dump(subjects, open( './data/subjects_90_logo.p','wb'))
 
 # segments, labels, subjects = segment_signal(df)
 groups = np.array(subjects)
@@ -729,11 +729,11 @@ print(numClasses)
 
 
 ```python
-print("segments shape:" + str(segments.shape))
-print("labels shape:" + str(labels.shape))
-print("\n")
-print("Rows / Timesteps: " + str(numOfRows))
-print("Columns / features: " + str(numOfColumns))
+print('segments shape:' + str(segments.shape))
+print('labels shape:' + str(labels.shape))
+print('\n')
+print('Rows / Timesteps: ' + str(numOfRows))
+print('Columns / features: ' + str(numOfColumns))
 
 ## key:
 ## Conv2D: (observations, timesteps, features (acc + gyro), channels)
@@ -808,9 +808,9 @@ cvscores = []
 
 for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
 
-    print("Training on fold " + str(index+1) + "/14...") ## 14 due to number of subjects in our dataset
+    print('Training on fold ' + str(index+1) + '/14...') ## 14 due to number of subjects in our dataset
 
-    # print("TRAIN:", train_index, "TEST:", test_index)
+    # print('TRAIN:', train_index, 'TEST:', test_index)
     trainX, testX = reshapedSegments[train_index], reshapedSegments[test_index]
     trainY, testY = labels[train_index], labels[test_index]
     # print(np.nan_to_num(trainX), np.nan_to_num(testX), trainY, testY)
@@ -827,15 +827,15 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
     
 #     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
-#     dill.dump(history, open( "./history/model_" + str(index) + "_history.p","wb"))
+#     dill.dump(history, open( './history/model_' + str(index) + '_history.p','wb'))
 
     ## evaluate the model
     score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
-    print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
+    print('%s: %.2f%%' % (model.metrics_names[1], score[1]*100))
     print('Baseline ConvLSTM Error: %.2f%%' %(100-score[1]*100))
     cvscores.append(score[1] * 100)
 
-print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+print('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 
 ## Save your model!
 model.save('model_had_lstm_logo.h5')
@@ -844,12 +844,12 @@ np.save('groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
 np.save('testData_had_lstm_logo.npy',np.expand_dims(testX,1))
 
 ## write to JSON, in case you wanrt to work with that data format later when inspecting your model
-with open("./data/model_had_logo.json", "w") as json_file:
+with open('./data/model_had_logo.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 ## write cvscores to file
 with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
-    cvs_file.write("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+    cvs_file.write('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 ```
 
 
@@ -887,7 +887,7 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 
 ```python
 ## the acc of our combined 'logo' models is 71.74%!
-with open("./train_history/cvscores_convlstm_logo.txt", "r") as cvs_scores:
+with open('./train_history/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
     cvs = cvs_scores.read()
 print(cvs)
 ```
@@ -899,13 +899,13 @@ print(cvs)
 ```python
 # %%pixie_debugger
 # -*- coding: utf-8 -*-
-"""
+'''
 Evaluate a pretrained model saved as *.h5 using 'testData_X.npy'
 and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentage. Also generates a png file for the confusion matrix.
 Based on work by Muhammad Shahnawaz.
 
 NOTE: keep in mind we are only looking at Model 14 given our 'logo' approach! 
-"""
+'''
 
 ## define a function for plotting the confusion matrix
 ## takes cmNormalized
@@ -955,8 +955,8 @@ def plot_cm(cM, labels,title):
 model = load_model('./data/model_had_lstm_logo.h5')
 
 ## load weights into new model
-model.load_weights("./data/model_weights_had_lstm_logo.h5")
-print("Loaded model from disk")
+model.load_weights('./data/model_weights_had_lstm_logo.h5')
+print('Loaded model from disk')
 
 ## loading the testData and groundTruth data
 test_x = np.load('./data/testData_had_lstm_logo.npy')
@@ -967,7 +967,7 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 score = model.evaluate(test_x,groundTruth,verbose=2)
 
 ## print out values for metrics
-print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
+print('%s: %.2f%%' % (model.metrics_names[1], score[1]*100))
 print('Baseline Error: %.2f%%' %(100-score[1]*100))
 
 ## Creating and plotting a confusion matrix
@@ -1116,13 +1116,13 @@ def print_graph_nodes(filename):
     g.ParseFromString(open(filename, 'rb').read())
     print()
     print(filename)
-    print("=======================INPUT=========================")
+    print('=======================INPUT=========================')
     print([n for n in g.node if n.name.find('input') != -1])
-    print("=======================OUTPUT========================")
+    print('=======================OUTPUT========================')
     print([n for n in g.node if n.name.find('output') != -1])
-    print("===================KERAS_LEARNING=====================")
+    print('===================KERAS_LEARNING=====================')
     print([n for n in g.node if n.name.find('keras_learning_phase') != -1])
-    print("======================================================")
+    print('======================================================')
     print()
 ```
 
@@ -1135,7 +1135,7 @@ K.clear_session()
 
 ## this was created with @warptime's help. Thank you!
 
-saved_model_path = "./tensorflow_pb_models/model_hcd.h5"
+saved_model_path = './tensorflow_pb_models/model_hcd.h5'
 
 model = load_model(saved_model_path)
 nb_classes = 1 ## The number of output nodes in the model
@@ -1172,8 +1172,8 @@ print('saved the constant graph (ready for inference) at: ', osp.join(output_fld
 ```python
 ## Method 1 inspect output
 
-print_graph_nodes("./tensorflow_pb_models/model_ucd.h5.pb")
-# print_graph_nodes("./graph_test/output_graph.pb")
+print_graph_nodes('./tensorflow_pb_models/model_ucd.h5.pb')
+# print_graph_nodes('./graph_test/output_graph.pb')
 ```
 
 
@@ -1183,7 +1183,7 @@ print_graph_nodes("./tensorflow_pb_models/model_ucd.h5.pb")
 K.clear_session()
 
 def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
-    """
+    '''
     Freezes the state of a session into a pruned computation graph.
 
     Creates a new computation graph where variable nodes are replaced by
@@ -1196,7 +1196,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
     @param output_names Names of the relevant graph outputs.
     @param clear_devices Remove the device directives from the graph for better portability.
     @return The frozen graph definition.
-    """
+    '''
     
     from tensorflow.python.framework.graph_util import convert_variables_to_constants
     graph = session.graph
@@ -1207,7 +1207,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
         input_graph_def = graph.as_graph_def()
         if clear_devices:
             for node in input_graph_def.node:
-                node.device = ""
+                node.device = ''
         frozen_graph = convert_variables_to_constants(session, input_graph_def,
                                                       output_names, freeze_var_names)
         return frozen_graph
@@ -1215,12 +1215,12 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
 ## create, compile and train model
 K.set_learning_phase(0)
 
-# model = "model_ucd.h5"
+# model = 'model_ucd.h5'
 model = load_model('./tensorflow_pb_models/model_ucd.h5')
 
 # tf.reset_default_graph()
 frozen_graph = freeze_session(K.get_session(), output_names=[out.op.name for out in model.outputs])
-tf.train.write_graph(frozen_graph, "./tensorflow_pb_models/", "ucd_model_test2.pb", as_text=False)
+tf.train.write_graph(frozen_graph, './tensorflow_pb_models/', 'ucd_model_test2.pb', as_text=False)
 ```
 
     INFO:tensorflow:Froze 42 variables.
@@ -1237,7 +1237,7 @@ tf.train.write_graph(frozen_graph, "./tensorflow_pb_models/", "ucd_model_test2.p
 
 ```python
 ## method 2 inspect output
-print_graph_nodes("./tensorflow_pb_models/ucd_model_test2.pb")
+print_graph_nodes('./tensorflow_pb_models/ucd_model_test2.pb')
 ```
 
 
@@ -1266,7 +1266,7 @@ saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
 
 ```python
 !python -W ignore /Users/aelali/anaconda/lib/python2.7/site-packages/tensorflow/python/tools/freeze_graph.py --input_meta_graph=/tmp/keras_model_test.ckpt.meta \
---input_checkpoint=/tmp/keras_model_test.ckpt --output_graph=./tensorflow_model/ucd_keras_frozen3_TEST.pb --output_node_names="OUTPUT/truediv" --input_binary=true
+--input_checkpoint=/tmp/keras_model_test.ckpt --output_graph=./tensorflow_model/ucd_keras_frozen3_TEST.pb --output_node_names='OUTPUT/truediv' --input_binary=true
 ```
 
     /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
@@ -1278,7 +1278,7 @@ saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
 
 ```python
 ## method 3 inspect output
-print_graph_nodes("./tensorflow_pb_models/ucd_keras_frozen3_test.pb")
+print_graph_nodes('./tensorflow_pb_models/ucd_keras_frozen3_test.pb')
 ```
 
 
@@ -1286,7 +1286,7 @@ print_graph_nodes("./tensorflow_pb_models/ucd_keras_frozen3_test.pb")
 ## freeze graphs: Method 4
 
 model = load_model('./tensorflow_pb_models/model_hcd_test.h5')
-# model.load_weights("model_weights_ucd.h5")
+# model.load_weights('model_weights_ucd.h5')
  
 ## all new operations will be in test mode from now on
 K.set_learning_phase(0)
@@ -1299,11 +1299,11 @@ weights = model.get_weights()
 new_model = Sequential.from_config(config)
 new_model.set_weights(weights)
  
-temp_dir = "graph_test"
-checkpoint_prefix = os.path.join(temp_dir, "saved_checkpoint")
-checkpoint_state_name = "checkpoint_state"
-input_graph_name = "input_graph.pb"
-output_graph_name = "output_graph.pb"
+temp_dir = 'graph_test'
+checkpoint_prefix = os.path.join(temp_dir, 'saved_checkpoint')
+checkpoint_state_name = 'checkpoint_state'
+input_graph_name = 'input_graph.pb'
+output_graph_name = 'output_graph.pb'
  
 ## temporary save graph to disk without weights included
 saver = tf.train.Saver()
@@ -1311,11 +1311,11 @@ checkpoint_path = saver.save(K.get_session(), checkpoint_prefix, global_step=0, 
 tf.train.write_graph(K.get_session().graph, temp_dir, input_graph_name)
  
 input_graph_path = os.path.join(temp_dir, input_graph_name)
-input_saver_def_path = ""
+input_saver_def_path = ''
 input_binary = False
-output_node_names = "OUTPUT/truediv" # model dependent (e.g., Softmax)
-restore_op_name = "save/restore_all"
-filename_tensor_name = "save/Const:0"
+output_node_names = 'OUTPUT/truediv' # model dependent (e.g., Softmax)
+restore_op_name = 'save/restore_all'
+filename_tensor_name = 'save/Const:0'
 output_graph_path = os.path.join(temp_dir, output_graph_name)
 clear_devices = False
  
@@ -1324,7 +1324,7 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
                           input_binary, checkpoint_path,
                           output_node_names, restore_op_name,
                           filename_tensor_name, output_graph_path,
-                          clear_devices, "")
+                          clear_devices, '')
 ```
 
     INFO:tensorflow:Restoring parameters from graph_test/saved_checkpoint-0
@@ -1373,7 +1373,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def load_graph(frozen_graph_filename):
     ## load the protobuf file from the disk and parse it to retrieve the unserialized graph_def
-    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
+    with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
 
@@ -1381,14 +1381,14 @@ def load_graph(frozen_graph_filename):
     with tf.Graph().as_default() as graph:
         ## graph var will prefix every op/nodes in your graph
         ## since we load everything in a new graph, this is not needed
-        tf.import_graph_def(graph_def, name="prefix")
+        tf.import_graph_def(graph_def, name='prefix')
     return graph
 ```
 
 
 ```python
-## load the graph using the "load_graph" function
-graph = load_graph("/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/model_ucd.h5.pb")
+## load the graph using the 'load_graph' function
+graph = load_graph('/Users/aelali/Desktop/HAR-CNN-Keras/tensorflow_pb_models/model_ucd.h5.pb')
 
 ## verify that we can access the list of operations in the graph
 for op in graph.get_operations():
@@ -1481,11 +1481,11 @@ with tf.Session(graph=graph) as sess:
     })
     
     l = np.round(testY[[100]])
-    print("label: " + str(l))
+    print('label: ' + str(l))
     z = (np.round(y_out)).astype(int)
-    print("prediction: " + str(z))
+    print('prediction: ' + str(z))
     
-    print("prediction correct? " + str(np.array_equal(l,z)))
+    print('prediction correct? ' + str(np.array_equal(l,z)))
 ```
 
     label: [[0 0 0 0 0 1 0]]
@@ -1501,13 +1501,13 @@ with tf.Session(graph=graph) as sess:
 
 len_sample = len(df)
 
-# print(df[df["activity"] == "Sitting"]["acc_x"])
-usc_sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
-usc_sit_df_acc_y = df[df["activity"] == "Sitting"]["acc_y"][0:len_sample]
-usc_sit_df_acc_z = df[df["activity"] == "Sitting"]["acc_z"][0:len_sample]
-usc_sit_df_gyr_x = df[df["activity"] == "Sitting"]["gyr_x"][0:len_sample]
-usc_sit_df_gyr_y = df[df["activity"] == "Sitting"]["gyr_y"][0:len_sample]
-usc_sit_df_gyr_z = df[df["activity"] == "Sitting"]["gyr_z"][0:len_sample]
+# print(df[df['activity'] == 'Sitting']['acc_x'])
+usc_sit_df_acc_x = df[df['activity'] == 'Sitting']['acc_x'][0:len_sample]
+usc_sit_df_acc_y = df[df['activity'] == 'Sitting']['acc_y'][0:len_sample]
+usc_sit_df_acc_z = df[df['activity'] == 'Sitting']['acc_z'][0:len_sample]
+usc_sit_df_gyr_x = df[df['activity'] == 'Sitting']['gyr_x'][0:len_sample]
+usc_sit_df_gyr_y = df[df['activity'] == 'Sitting']['gyr_y'][0:len_sample]
+usc_sit_df_gyr_z = df[df['activity'] == 'Sitting']['gyr_z'][0:len_sample]
 
 
 print('sitting mean usc-had acc_x: '+ str(np.mean(usc_sit_df_acc_x)))
@@ -1590,12 +1590,12 @@ plt.show()
 acc_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Accelerometer.csv')[100:400]
 gyr_sit_android = pd.read_csv('/Users/aelali/Desktop/2018-08-17_12-05-30/Gyroscope.csv')[100:400]
 
-sit_acc_x = acc_sit_android["X"]
-sit_acc_y = acc_sit_android["Y"]
-sit_acc_z = acc_sit_android["Z"]
-sit_gyr_x = gyr_sit_android["X"]
-sit_gyr_y = gyr_sit_android["Y"]
-sit_gyr_z = gyr_sit_android["Z"]
+sit_acc_x = acc_sit_android['X']
+sit_acc_y = acc_sit_android['Y']
+sit_acc_z = acc_sit_android['Z']
+sit_gyr_x = gyr_sit_android['X']
+sit_gyr_y = gyr_sit_android['Y']
+sit_gyr_z = gyr_sit_android['Z']
 
 print('sitting android acc_x size: '+ str(len(sit_acc_x)))
 
