@@ -101,7 +101,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 51843 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 52537 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -149,6 +149,8 @@ os.remove("./data/mobilehci2018_tutorial_data.zip")
 
 
 ```python
+## let's first define some function we will use
+
 ## setting up a random seed for reproducibility
 random_seed = 611
 np.random.seed(random_seed)
@@ -191,7 +193,6 @@ def normalize_dataset(data, minmax):
 	for row in data:
 		for i in range(len(row)):
 			row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
-            
             
 ## compute Euclidean Norm
 def featureNormalizeEuclidean(data):
@@ -244,7 +245,6 @@ def segment_signal(data, window_size = 90):
                 labels = np.append(labels,stats.mode(data['activity'][start:end])[0][0])
             subjects = np.append(subjects,stats.mode(data['subject'][start:end])[0][0])
     return segments, labels, subjects
-
 ```
 
 
@@ -625,11 +625,9 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 
 
 ```python
+## print the value counts for each activity
 print(df['activity'].value_counts())
 ```
-
-
-
 
     Walking Forward       381400
     Sleeping              375000
@@ -645,9 +643,6 @@ print(df['activity'].value_counts())
     Jumping Up            107100
     Name: activity, dtype: int64
 
-
-
-### Config your ConvLSTM
 
 
 ```python
@@ -683,11 +678,7 @@ reshapedSegments = segments.reshape(segments.shape[0], numOfRows, numOfColumns,1
 labels = np.asarray(pd.get_dummies(labels),dtype = np.int8)
 ```
 
-    1957
-    266
-    1957
-    266
-
+### Config your ConvLSTM
 
 
 ```python
@@ -728,12 +719,6 @@ print(numClasses)
 
     (62476, 12)
     12
-    segments shape:(62476, 90, 6)
-    labels shape:(62476, 12)
-    trainX shape: (49988, 90, 6, 1)
-    trainY shape: (49988, 12)
-    testX shape: (12488, 90, 6, 1)
-    testY shape: (12488, 12)
 
 
 
@@ -749,8 +734,8 @@ print("Columns / features: " + str(numOfColumns))
 ## LSTM: (batch size, observations, timesteps, features (acc + gyro), channels)
 ```
 
-    segments shape:(2223, 90, 6)
-    labels shape:(2223, 7)
+    segments shape:(62476, 90, 6)
+    labels shape:(62476, 12)
     
     
     Rows / Timesteps: 90
@@ -913,12 +898,14 @@ Based on work by Muhammad Shahnawaz.
 ## takes cmNormalized
 os.environ['QT_PLUGIN_PATH'] = ''
 def plot_cm(cM, labels,title):
+    
+    plt.close()
     ## normalizing the confusionMatrix for showing the probabilities
     cmNormalized = np.around((cM/cM.astype(np.float).sum(axis=1)[:,None])*100,2)
     ## creating a figure object
     fig = plt.figure()
     ## plotting the confusion matrix
-    plt.imshow(cmNormalized,interpolation=None,cmap = plt.cm.Blues)
+    plt.imshow(cmNormalized,interpolation='bilinear',cmap = plt.cm.Purples)
     ## creating a color bar and setting the limits
     plt.colorbar()
     plt.clim(0,100)
@@ -941,21 +928,26 @@ def plot_cm(cM, labels,title):
             plt.gca().annotate(
                     '{:d}'.format(int(cmNormalized[predicted,real])),xy=(real, predicted),
                     horizontalalignment = 'center',verticalalignment = 'center',color = color)
+
     ## making sure that the figure is not clipped
     plt.tight_layout()
+    plt.grid('off')
+#     ## turn off white grid lines
+#     plt.grid(False)
+#     ax.grid(False)
     ## saving the figure
     fig.savefig(title +'.png')
     
 ## loading the pretrained model
-model = load_model('./data/model_ucd.h5')
+model = load_model('./data/model_had_lstm_logo.h5')
 
 ## load weights into new model
-model.load_weights("./data/model_weights_ucd.h5")
+model.load_weights("./data/model_weights_had_lstm_logo.h5")
 print("Loaded model from disk")
 
 ## loading the testData and groundTruth data
-test_x = np.load('./data/testData_ucd.npy')
-groundTruth = np.load('./data/groundTruth_ucd.npy')
+test_x = np.load('./data/testData_had_lstm_logo.npy')
+groundTruth = np.load('./data/groundTruth_had_lstm_logo.npy')
 
 ## evaluate loaded model on test data
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -964,7 +956,6 @@ score = model.evaluate(test_x,groundTruth,verbose=2)
 ## print out values for metrics
 print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 print('Baseline Error: %.2f%%' %(100-score[1]*100))
-
 
 ## Creating and plotting a confusion matrix
 
@@ -987,59 +978,61 @@ cm = metrics.confusion_matrix(groundTruthClass,predictedClass)
 print(cm)
 
 ## plotting the confusion matrix
-plot_cm(cm, labels,'./plots/confusion_matrix_90_')
+plot_cm(cm, labels,'./plots/confusion_matrix_90_logo')
 
 print(model.summary())
 
 ```
 
     Loaded model from disk
-    acc: 80.12%
-    Baseline Error: 19.88%
-    [[ 246  342    1    1    9    0  127   10    2    0    0    0]
-     [ 186  387    2    0    7    0  126   10    2    0    0    0]
-     [   0    0  320   22    0    1    5  114   13    1    1   11]
-     [   0    0   35  682    0    0    1   32   15    2    0    9]
-     [  11   10    1    0 1097    1   62    1    1    0    0    2]
-     [   0    1    0    0    3 1656    0    2    0    1    3    0]
-     [  14   22    5    0   12    0  956   11    2    0    0   16]
-     [   1    0   16   16    0    0   10  694   61   18    3   23]
-     [   0    0    5    0    0    0   15   34 1575   23   15   38]
-     [   1    0    1    0    0    0   11   92  188  826   18    7]
-     [   0    0    2    0    0    0    8   19  241    1  882   58]
-     [   1    0    6   11    1    1   16   80  120    4   45  668]]
+    acc: 78.37%
+    Baseline Error: 21.63%
+    [[ 32 272   0   0  16   0  24   0   0   0   0   0]
+     [ 29 276   0   0  10   0  25   0   2   1   0   1]
+     [  0   0 164  15   0   0   0   2   1   0   0   1]
+     [  0   0   6 317   1   1   0   1   3   0   0   2]
+     [  9 140   0   0 127   0  80   0   0   0   0   0]
+     [  0   0   0   0   0 556   0   0   0   0   0   0]
+     [  2   1  13   0  74   0 160   8  30   7   2  14]
+     [  0   0 212   1   1   0   2 408  16  46   1  10]
+     [  0   0   0   1   0   0   2   0 903  10  26   2]
+     [  1   0   0   0   0   0   0   6  56 432   3   2]
+     [  0   0   0   0   0   0   0   1  20   2 434   4]
+     [  0   0   4   1   5   1   1   2  18   2   1 732]]
     Accuracy for each class is given below.
-    ('WalkForward :', 33.33, '%')
-    ('WalkLeft    :', 53.75, '%')
-    ('WalkRight   :', 65.57, '%')
-    ('WalkUp      :', 87.89, '%')
-    ('WalkDown    :', 92.5, '%')
-    ('RunForward  :', 99.4, '%')
-    ('JumpUp      :', 92.1, '%')
-    ('Sit         :', 82.42, '%')
-    ('Stand       :', 92.38, '%')
-    ('Sleep       :', 72.2, '%')
-    ('ElevatorUp  :', 72.83, '%')
-    ('ElevatorDown:', 70.09, '%')
+    ('WalkForward :', 9.3, '%')
+    ('WalkLeft    :', 80.23, '%')
+    ('WalkRight   :', 89.62, '%')
+    ('WalkUp      :', 95.77, '%')
+    ('WalkDown    :', 35.67, '%')
+    ('RunForward  :', 100.0, '%')
+    ('JumpUp      :', 51.45, '%')
+    ('Sit         :', 58.54, '%')
+    ('Stand       :', 95.66, '%')
+    ('Sleep       :', 86.4, '%')
+    ('ElevatorUp  :', 94.14, '%')
+    ('ElevatorDown:', 95.44, '%')
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    conv2d_1 (Conv2D)            (None, 89, 5, 128)        640       
+    conv_lst_m2d_14 (ConvLSTM2D) (None, None, 90, 6, 128)  264704    
     _________________________________________________________________
-    max_pooling2d_1 (MaxPooling2 (None, 44, 2, 128)        0         
+    time_distributed_40 (TimeDis (None, None, 45, 3, 128)  0         
     _________________________________________________________________
-    dropout_1 (Dropout)          (None, 44, 2, 128)        0         
+    dropout_14 (Dropout)         (None, None, 45, 3, 128)  0         
     _________________________________________________________________
-    flatten_1 (Flatten)          (None, 11264)             0         
+    time_distributed_41 (TimeDis (None, None, 17280)       0         
     _________________________________________________________________
-    dense_1 (Dense)              (None, 128)               1441920   
+    dense_40 (Dense)             (None, None, 128)         2211968   
     _________________________________________________________________
-    dense_2 (Dense)              (None, 128)               16512     
+    dense_41 (Dense)             (None, None, 128)         16512     
     _________________________________________________________________
-    dense_3 (Dense)              (None, 12)                1548      
+    time_distributed_42 (TimeDis (None, None, 128)         0         
+    _________________________________________________________________
+    dense_42 (Dense)             (None, None, 12)          1548      
     =================================================================
-    Total params: 1,460,620
-    Trainable params: 1,460,620
+    Total params: 2,494,732
+    Trainable params: 2,494,732
     Non-trainable params: 0
     _________________________________________________________________
     None
