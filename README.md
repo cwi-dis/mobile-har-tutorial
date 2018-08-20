@@ -56,6 +56,12 @@ K.clear_session()
 
 
 ```python
+## install all necessary python 2.7 packages
+# !pip install -r requirements.txt
+```
+
+
+```python
 ## convert Jupyter notebook to a README for GitHub repo's main page
 !jupyter nbconvert --to markdown mobilehci2018_keras_har_tutorial.ipynb
 !mv mobilehci2018_keras_har_tutorial.md README.md
@@ -95,7 +101,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 51907 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 51843 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -170,6 +176,23 @@ def featureNormalizeZscore(data):
 #     order=2
 # )
     
+# find the min and max values for each column
+def dataset_minmax(data):
+	minmax = list()
+	for i in range(len(data[0])):
+		col_values = [row[i] for row in data]
+		value_min = min(col_values)
+		value_max = max(col_values)
+		minmax.append([value_min, value_max])
+	return minmax
+ 
+# rescale dataset columns to the range 0-1
+def normalize_dataset(data, minmax):
+	for row in data:
+		for i in range(len(row)):
+			row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
+            
+            
 ## compute Euclidean Norm
 def featureNormalizeEuclidean(data):
     return np.sqrt(sum(data^2))
@@ -303,8 +326,11 @@ df.loc[df['activity'] == '12', 'activity'] = 'Elevator Down'
 df['activity'].unique() 
 
 ## print size of dataset
-print 'df size ' + str(len(df))
+print('df size ' + str(len(df)))
 ```
+
+    df size 2811490
+
 
 
 ```python
@@ -320,7 +346,7 @@ print 'df size ' + str(len(df))
 
 ```python
 ## inspect the dataframe
-print df[1:10]
+print(df[1:10])
 ```
 
       subject     acc_x     acc_y     acc_z     gyr_x     gyr_y     gyr_z  \
@@ -399,46 +425,46 @@ For Android Nexus 5 sensor specs, check: https://www.bosch-sensortec.com/bst/pro
 ## explore your overall accel and gyro values: min, max, mean, and plot over time
 
 ## accelerometer 
-print 'acc_x'
-print min(df['acc_x'])
-print max(df['acc_x'])
-print np.mean(df['acc_x'])
+print('acc_x')
+print(min(df['acc_x']))
+print(max(df['acc_x']))
+print(np.mean(df['acc_x']))
 plt.plot(df['acc_x'])
 plt.show()
 
-print 'acc_y'
-print min(df['acc_y'])
-print max(df['acc_y'])
-print np.mean(df['acc_y'])
+print('acc_y')
+print(min(df['acc_y']))
+print(max(df['acc_y']))
+print(np.mean(df['acc_y']))
 plt.plot(df['acc_y'])
 plt.show()
 
-print 'acc_z'
-print min(df['acc_z'])
-print max(df['acc_z'])
-print np.mean(df['acc_z'])
+print('acc_z')
+print(min(df['acc_z']))
+print(max(df['acc_z']))
+print(np.mean(df['acc_z']))
 plt.plot(df['acc_z'])
 plt.show()
 
 ## gyroscope 
-print 'gyr_x'
-print min(df['gyr_x'])
-print max(df['gyr_x'])
-print np.mean(df['gyr_x'])
+print('gyr_x')
+print(min(df['gyr_x']))
+print(max(df['gyr_x']))
+print(np.mean(df['gyr_x']))
 plt.plot(df['gyr_x'])
 plt.show()
 
-print 'gyr_y'
-print min(df['gyr_y'])
-print max(df['gyr_y'])
-print np.mean(df['gyr_y'])
+print('gyr_y')
+print(min(df['gyr_y']))
+print(max(df['gyr_y']))
+print(np.mean(df['gyr_y']))
 plt.plot(df['gyr_y'])
 plt.show()
 
-print 'gyr_z'
-print min(df['gyr_z'])
-print max(df['gyr_z'])
-print np.mean(df['gyr_z'])
+print('gyr_z')
+print(min(df['gyr_z']))
+print(max(df['gyr_z']))
+print(np.mean(df['gyr_z']))
 plt.plot(df['gyr_z'])
 plt.show()
 ```
@@ -450,7 +476,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
 
 
     acc_y
@@ -460,7 +486,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
 
 
     acc_z
@@ -470,7 +496,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
 
 
     gyr_x
@@ -480,7 +506,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
 
 
     gyr_y
@@ -490,7 +516,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
 
 
     gyr_z
@@ -500,7 +526,7 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_14_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
 
 
 
@@ -539,51 +565,51 @@ plot_datasets(df)
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_6.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_7.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_8.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_9.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_10.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_11.png)
 
 
 
@@ -594,12 +620,12 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_0.png)
 
 
 
 ```python
-print df['activity'].value_counts()
+print(df['activity'].value_counts())
 ```
 
 
@@ -634,9 +660,9 @@ labels = pickle.load(open('./data/labels_90_logo.p','rb'))
 subjects = pickle.load(open('./data/subjects_90_logo.p','rb'))
 
 ## dump information to that file (UNCOMMENT to save fresh segmentation!)
-# pickle.dump(segments, open( "./data/segments_90.p","wb"))
-# pickle.dump(labels, open( "./data/labels_90.p","wb"))
-# pickle.dump(subjects, open( "subjects_90_logo.p","wb"))
+# pickle.dump(segments, open( "./data/segments_90_logo.p","wb"))
+# pickle.dump(labels, open( "./data/labels_90_logo.p","wb"))
+# pickle.dump(subjects, open( "./data/subjects_90_logo.p","wb"))
 
 # segments, labels, subjects = segment_signal(df)
 groups = np.array(subjects)
@@ -687,17 +713,17 @@ dropOutRatio = 0.2
 
 ## number of total clases
 numClasses = labels.shape[1]
-print labels.shape
-print numClasses
+print(labels.shape)
+print(numClasses)
 
 # k = []
 
 # for i in range(len(labels)):
 #     if labels[i][0] == 1: 
 #         k.append(labels[i])
-# print len(k)
+# print(len(k))
 
-# print labels.shape
+# print(labels.shape)
 ```
 
     (62476, 12)
@@ -712,11 +738,11 @@ print numClasses
 
 
 ```python
-print "segments shape:" + str(segments.shape)
-print "labels shape:" + str(labels.shape)
-print "\n"
-print "Rows / Timesteps: " + str(numOfRows)
-print "Columns / features: " + str(numOfColumns)
+print("segments shape:" + str(segments.shape))
+print("labels shape:" + str(labels.shape))
+print("\n")
+print("Rows / Timesteps: " + str(numOfRows))
+print("Columns / features: " + str(numOfColumns))
 
 ## key:
 ## Conv2D: (observations, timesteps, features (acc + gyro), channels)
@@ -735,42 +761,42 @@ print "Columns / features: " + str(numOfColumns)
 ```python
 def Conv2D_LSTM_Model():
     model = Sequential()
-    print (model.name)
+    print(model.name)
 
     # adding the first convLSTM layer with 32 filters and 5 by 5 kernal size, using the rectifier as the activation function
     model.add(ConvLSTM2D(numFilters, (kernalSize1,kernalSize1),input_shape=(None, numOfRows, numOfColumns, 1),activation='relu', padding='same',return_sequences=True))
-    print (model.input_shape)
-    print (model.output_shape)
-    print (model.name)
+    print(model.input_shape)
+    print(model.output_shape)
+    print(model.name)
     
     ## adding a maxpooling layer
     model.add(TimeDistributed(MaxPooling2D(pool_size=(poolingWindowSz,poolingWindowSz),padding='valid')))
-    print (model.output_shape)
+    print(model.output_shape)
 
     ## adding a dropout layer for the regularization and avoiding over fitting
     model.add(Dropout(dropOutRatio))
-    print (model.output_shape)
+    print(model.output_shape)
     
     ## flattening the output in order to apple dense layer
     model.add(TimeDistributed(Flatten()))
-    print (model.output_shape)
+    print(model.output_shape)
     
     ## adding first fully connected layer with 256 outputs
     model.add(Dense(numNueronsFCL1, activation='relu'))
-    print (model.output_shape)
+    print(model.output_shape)
 
     ## adding second fully connected layer 128 outputs
     model.add(Dense(numNueronsFCL2, activation='relu'))
-    print (model.output_shape)
+    print(model.output_shape)
 
     ## flattening the output in order to apply the fully connected layer
     model.add(TimeDistributed(Flatten()))
-    print (model.output_shape)
+    print(model.output_shape)
 
     ## adding softmax layer for the classification
     model.add(Dense(numClasses, activation='softmax'))
-    print (model.output_shape)
-    print (model.name)
+    print(model.output_shape)
+    print(model.name)
 
     ## Compiling the model to generate a model
     adam = optimizers.Adam(lr = 0.001, decay=1e-6)
@@ -791,7 +817,7 @@ cvscores = []
 
 for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
 
-    print "Training on fold " + str(index+1) + "/14..." ## 14 due to number of subjects in our dataset
+    print("Training on fold " + str(index+1) + "/14...") ## 14 due to number of subjects in our dataset
 
     # print("TRAIN:", train_index, "TEST:", test_index)
     trainX, testX = reshapedSegments[train_index], reshapedSegments[test_index]
@@ -804,7 +830,7 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
 
     for layer in model.layers:
         print(layer.name)
-    print trainX.shape
+    print(trainX.shape)
 
     ## fit the model
     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
@@ -837,14 +863,14 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 
 
 ```python
-print model.name
-print (model.input_shape)
+print(model.name)
+print(model.input_shape)
 ```
 
 
 ```python
 ## shape of data to feed frozen model later in Android code
-print testX[[1]].shape
+print(testX[[1]].shape)
 ```
 
     (1, 90, 6, 1)
@@ -861,10 +887,10 @@ print testX[[1]].shape
 # testY = np.expand_dims(testY,0)
 
 ## test reshape for ConvLSTM
-# print np.expand_dims(testY,1).shape
-# print trainX.shape
+# print(np.expand_dims(testY,1).shape)
+# print(trainX.shape)
 
-# print trainX.reshape((None,50094, 90, 6, 1))
+# print(trainX.reshape((None,50094, 90, 6, 1)))
 ```
 
     (12467, 1, 12)
@@ -958,12 +984,12 @@ for instance in range (groundTruth.shape[0]):
 
 cm = metrics.confusion_matrix(groundTruthClass,predictedClass)
 
-print cm
+print(cm)
 
 ## plotting the confusion matrix
 plot_cm(cm, labels,'./plots/confusion_matrix_90_')
 
-print model.summary()
+print(model.summary())
 
 ```
 
@@ -1020,7 +1046,7 @@ print model.summary()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_29_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
 
 
 
@@ -1056,7 +1082,7 @@ plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight'))
 
 ```python
 # history.history['loss']
-# print history.model.evaluate(testX,testY,verbose=3)
+# print(history.model.evaluate(testX,testY,verbose=3))
 ```
 
 ### Freeze and inspect Keras model graphs
@@ -1433,11 +1459,11 @@ with tf.Session(graph=graph) as sess:
     })
     
     l = np.round(testY[[100]])
-    print "label: " + str(l)
+    print("label: " + str(l))
     z = (np.round(y_out)).astype(int)
-    print "prediction: " + str(z)
+    print("prediction: " + str(z))
     
-    print "prediction correct? " + str(np.array_equal(l,z))
+    print("prediction correct? " + str(np.array_equal(l,z)))
 ```
 
     label: [[0 0 0 0 0 1 0]]
@@ -1453,7 +1479,7 @@ with tf.Session(graph=graph) as sess:
 
 len_sample = len(df)
 
-# print df[df["activity"] == "Sitting"]["acc_x"]
+# print(df[df["activity"] == "Sitting"]["acc_x"])
 usc_sit_df_acc_x = df[df["activity"] == "Sitting"]["acc_x"][0:len_sample]
 usc_sit_df_acc_y = df[df["activity"] == "Sitting"]["acc_y"][0:len_sample]
 usc_sit_df_acc_z = df[df["activity"] == "Sitting"]["acc_z"][0:len_sample]
@@ -1462,23 +1488,23 @@ usc_sit_df_gyr_y = df[df["activity"] == "Sitting"]["gyr_y"][0:len_sample]
 usc_sit_df_gyr_z = df[df["activity"] == "Sitting"]["gyr_z"][0:len_sample]
 
 
-print 'sitting mean usc-had acc_x: '+ str(np.mean(usc_sit_df_acc_x))
-print 'sitting std usc-had acc_x: '+ str(np.std(usc_sit_df_acc_x))
+print('sitting mean usc-had acc_x: '+ str(np.mean(usc_sit_df_acc_x)))
+print('sitting std usc-had acc_x: '+ str(np.std(usc_sit_df_acc_x)))
 
-print 'sitting mean usc-had acc_y: '+ str(np.mean(usc_sit_df_acc_y))
-print 'sitting std usc-had acc_y: '+ str(np.std(usc_sit_df_acc_y))
+print('sitting mean usc-had acc_y: '+ str(np.mean(usc_sit_df_acc_y)))
+print('sitting std usc-had acc_y: '+ str(np.std(usc_sit_df_acc_y)))
 
-print 'sitting mean usc-had acc_z: '+ str(np.mean(usc_sit_df_acc_z))
-print 'sitting std usc-had acc_z: '+ str(np.std(usc_sit_df_acc_z))
+print('sitting mean usc-had acc_z: '+ str(np.mean(usc_sit_df_acc_z)))
+print('sitting std usc-had acc_z: '+ str(np.std(usc_sit_df_acc_z)))
 
-print 'sitting mean usc-had gyr_x: '+ str(np.mean(usc_sit_df_acc_z))
-print 'sitting std usc-had gyr_x: '+ str(np.std(usc_sit_df_acc_z))
+print('sitting mean usc-had gyr_x: '+ str(np.mean(usc_sit_df_acc_z)))
+print('sitting std usc-had gyr_x: '+ str(np.std(usc_sit_df_acc_z)))
 
-print 'sitting mean usc-had gyr_y: '+ str(np.mean(usc_sit_df_acc_z))
-print 'sitting std usc-had gyr_y: '+ str(np.std(usc_sit_df_gyr_y))
+print('sitting mean usc-had gyr_y: '+ str(np.mean(usc_sit_df_acc_z)))
+print('sitting std usc-had gyr_y: '+ str(np.std(usc_sit_df_gyr_y)))
 
-print 'sitting mean usc-had gyr_z: '+ str(np.mean(usc_sit_df_gyr_z))
-print 'sitting std usc-had gyr_z: '+ str(np.std(usc_sit_df_gyr_z))
+print('sitting mean usc-had gyr_z: '+ str(np.mean(usc_sit_df_gyr_z)))
+print('sitting std usc-had gyr_z: '+ str(np.std(usc_sit_df_gyr_z)))
 
 
 # print 'usc-had dataset acc_x sample for sitting activity: '+ str(np.mean(sit_df_acc_x))
@@ -1512,27 +1538,27 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_50_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_6.png)
 
 
 
@@ -1549,25 +1575,25 @@ sit_gyr_x = gyr_sit_android["X"]
 sit_gyr_y = gyr_sit_android["Y"]
 sit_gyr_z = gyr_sit_android["Z"]
 
-print 'sitting android acc_x size: '+ str(len(sit_acc_x))
+print('sitting android acc_x size: '+ str(len(sit_acc_x)))
 
-print 'sitting mean android acc_x: '+ str(np.mean(sit_acc_x))
-print 'sitting std android acc_x: '+ str(np.std(sit_acc_x))
+print('sitting mean android acc_x: '+ str(np.mean(sit_acc_x)))
+print('sitting std android acc_x: '+ str(np.std(sit_acc_x)))
 
-print 'sitting mean android acc_y: '+ str(np.mean(sit_acc_y))
-print 'sitting std android acc_y: '+ str(np.std(sit_acc_y))
+print('sitting mean android acc_y: '+ str(np.mean(sit_acc_y)))
+print('sitting std android acc_y: '+ str(np.std(sit_acc_y)))
 
-print 'sitting mean android acc_z: '+ str(np.mean(sit_acc_z))
-print 'sitting std android acc_z: '+ str(np.std(sit_acc_z))
+print('sitting mean android acc_z: '+ str(np.mean(sit_acc_z)))
+print('sitting std android acc_z: '+ str(np.std(sit_acc_z)))
 
-print 'sitting mean android gyr_x: '+ str(np.mean(sit_gyr_x))
-print 'sitting std android gyr_x: '+ str(np.std(sit_gyr_x))
+print('sitting mean android gyr_x: '+ str(np.mean(sit_gyr_x)))
+print('sitting std android gyr_x: '+ str(np.std(sit_gyr_x)))
 
-print 'sitting mean android gyr_y: '+ str(np.mean(sit_gyr_y))
-print 'sitting std android gyr_y: '+ str(np.std(sit_gyr_y))
+print('sitting mean android gyr_y: '+ str(np.mean(sit_gyr_y)))
+print('sitting std android gyr_y: '+ str(np.std(sit_gyr_y)))
 
-print 'sitting mean android gyr_z: '+ str(np.mean(sit_gyr_z))
-print 'sitting std android gyr_z: '+ str(np.std(sit_gyr_z))
+print('sitting mean android gyr_z: '+ str(np.mean(sit_gyr_z)))
+print('sitting std android gyr_z: '+ str(np.std(sit_gyr_z)))
 
 
 plt.plot(sit_acc_x)
@@ -1600,25 +1626,25 @@ plt.show()
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_6.png)
 
