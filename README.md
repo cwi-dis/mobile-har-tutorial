@@ -103,7 +103,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 53386 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 53474 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -854,17 +854,6 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 
 
 ```python
-## the acc of our combined 'logo' models is 71.74%!
-with open("./train_history/cvscores_convlstm_logo.txt", "r") as cvs_scores:
-    cvs = cvs_scores.read()
-print(cvs)
-```
-
-    LeaveOneGroupOut cross-validation scores: 71.74% (+/- 9.49%)
-
-
-
-```python
 ## shape of data to feed frozen model later in Android code
 # print(testX[[1]].shape)
 ```
@@ -894,6 +883,17 @@ print(cvs)
 
 
 ### Evaluate model, and plot confusion matrix + acc/loss graphs
+
+
+```python
+## the acc of our combined 'logo' models is 71.74%!
+with open("./train_history/cvscores_convlstm_logo.txt", "r") as cvs_scores:
+    cvs = cvs_scores.read()
+print(cvs)
+```
+
+    LeaveOneGroupOut cross-validation scores: 71.74% (+/- 9.49%)
+
 
 
 ```python
