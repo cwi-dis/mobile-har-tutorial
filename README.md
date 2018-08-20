@@ -101,7 +101,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 52537 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 52554 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -1046,14 +1046,14 @@ print(model.summary())
 ```python
 ## plot acc and loss plot of last stored model weights in history variable
 
-## load model history (models 1-14)
-# history = pickle.load(open('./history/model_1_history.p','rb'))
+## load model history (models 1-14). Below we load the last 'logo model 
+history = pickle.load(open('./train_history/train_history_dict_0','rb'))
 
-print(history.history.keys())
+print(history.keys())
 
 ## plot train+val accuracy
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
+plt.plot(history['acc'])
+plt.plot(history['val_acc'])
 plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
@@ -1062,15 +1062,30 @@ plt.show()
 plt.savefig('./plots/acc_plot_logo.pdf', bbox_inches='tight')
 
 ## plot train+val loss
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
+plt.plot(history['loss'])
+plt.plot(history['val_loss'])
 plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
-plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight'))
+plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight')
 ```
+
+    ['acc', 'loss', 'val_acc', 'val_loss']
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_2.png)
+
+
+
+    <matplotlib.figure.Figure at 0x1845b52d0>
+
 
 
 ```python
@@ -1100,7 +1115,8 @@ def print_graph_nodes(filename):
 
 
 ```python
-## Freeze graphs: Method 1
+## Freeze graphs: Method 1 
+## NOTE: all frozen models are based on TrainSplit of 80%/20%, and not on LeaveOneGroupOut model (since we take the last one)
 
 K.clear_session()
 
