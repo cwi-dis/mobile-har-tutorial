@@ -101,7 +101,9 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 52554 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Writing 53386 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -109,11 +111,15 @@ K.clear_session()
 ## check tensorflow version
 !python -W ignore -c 'import tensorflow as tf; print(tf.__version__)'  # for Python 2
 
+## check python version
+!python --version
+
 ## gradle TF build repo
 # https://mvnrepository.com/artifact/org.tensorflow/tensorflow-android/1.5.0-rc1
 ```
 
     1.9.0
+    Python 2.7.14 :: Anaconda custom (64-bit)
 
 
 
@@ -848,14 +854,19 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 
 
 ```python
-print(model.name)
-print(model.input_shape)
+## the acc of our combined 'logo' models is 71.74%!
+with open("./train_history/cvscores_convlstm_logo.txt", "r") as cvs_scores:
+    cvs = cvs_scores.read()
+print(cvs)
 ```
+
+    LeaveOneGroupOut cross-validation scores: 71.74% (+/- 9.49%)
+
 
 
 ```python
 ## shape of data to feed frozen model later in Android code
-print(testX[[1]].shape)
+# print(testX[[1]].shape)
 ```
 
     (1, 90, 6, 1)
@@ -892,6 +903,8 @@ print(testX[[1]].shape)
 Evaluate a pretrained model saved as *.h5 using 'testData_X.npy'
 and 'groundTruth_X.npy'. Error reported is the cross entropy loss in percentage. Also generates a png file for the confusion matrix.
 Based on work by Muhammad Shahnawaz.
+
+NOTE: keep in mind we are only looking at Model 14 given our 'logo' approach! 
 """
 
 ## define a function for plotting the confusion matrix
@@ -1046,7 +1059,7 @@ print(model.summary())
 ```python
 ## plot acc and loss plot of last stored model weights in history variable
 
-## load model history (models 1-14). Below we load the last 'logo model 
+## load model history (models 1-14). Below we load the last 'logo' model 
 history = pickle.load(open('./train_history/train_history_dict_0','rb'))
 
 print(history.keys())
