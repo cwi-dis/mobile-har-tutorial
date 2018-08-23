@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextToSpeech textToSpeech;
     private float[] results;
     private TensorFlowClassifier classifier;
+    float[] gravity = new float[3];
     private Float[] sample = {null, null, null, null, null, null};
 
 
@@ -118,14 +119,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return true;
     }
 
+    private float[] convertAcceleration(float[] acc) {
+        final float alpha = 0.8f;
+
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * acc[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * acc[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * acc[2];
+
+        float[] result = {acc[0] - gravity[0], acc[1] - gravity[1], acc[2] - gravity[2]};
+        return result;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
 //        synchronized (this) {
             switch (event.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER:
-                    sample[0] = event.values[0];
-                    sample[1] = event.values[1];
-                    sample[2] = event.values[2];
+                    float[] resultAcc = convertAcceleration(event.values);
+
+                    sample[0] = resultAcc[0];
+                    sample[1] = resultAcc[1];
+                    sample[2] = resultAcc[2];
                     break;
                 case Sensor.TYPE_GYROSCOPE:
                     sample[3] = event.values[0];
