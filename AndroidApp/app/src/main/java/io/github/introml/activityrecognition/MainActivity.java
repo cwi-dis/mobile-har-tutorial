@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +22,6 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements SensorEventListener, TextToSpeech.OnInitListener {
 
     List<Float> values = new ArrayList<Float>();
-    List<Float> x = new ArrayList<Float>();
-
-    boolean expectAcc = true;
 
     private TextView walkForwardTextView;
     private TextView walkLeftTextView;
@@ -42,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextToSpeech textToSpeech;
     private float[] results;
     private TensorFlowClassifier classifier;
+    private Float[] sample = {null, null, null, null, null, null};
 
 
     private static final int N_FEATURES = 6;
@@ -56,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         values = new ArrayList<>();
-        x = new ArrayList<>();
 
         walkForwardTextView = (TextView) findViewById(R.id.walkforward_prob);
         walkLeftTextView = (TextView) findViewById(R.id.walkleft_prob);
@@ -112,32 +108,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    private boolean isSampleComplete() {
+        for (int i=0; i<sample.length; i++) {
+            if (sample[i] == null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-
 //        synchronized (this) {
             switch (event.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER:
-                    if (expectAcc) {
-                        x.add(event.values[0]);
-                        values.add(event.values[0]);
-                        values.add(event.values[1]);
-                        values.add(event.values[2]);
-                        expectAcc = false;
-                    }
+                    sample[0] = event.values[0];
+                    sample[1] = event.values[1];
+                    sample[2] = event.values[2];
                     break;
                 case Sensor.TYPE_GYROSCOPE:
-                    if (!expectAcc) {
-                        values.add(event.values[0]);
-                        values.add(event.values[1]);
-                        values.add(event.values[2]);
-                        expectAcc = true;
-                    }
+                    sample[3] = event.values[0];
+                    sample[4] = event.values[1];
+                    sample[5] = event.values[2];
                     break;
             }
 
-            Log.v("acc_x", Arrays.toString(new List[]{x}));
+            if (isSampleComplete()) {
+                Log.v("sensorData", Arrays.toString(sample));
 
+                for (int i=0; i<sample.length; i++) {
+                    values.add(sample[i]);
+                    sample[i] = null;
+                }
+            }
 
             if (values.size() == N_FEATURES * N_STEPS) {
 
