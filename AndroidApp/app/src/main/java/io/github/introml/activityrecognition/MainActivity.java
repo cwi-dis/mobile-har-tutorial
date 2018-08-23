@@ -130,6 +130,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return result;
     }
 
+    private float[] convertAngularVelocity(float[] velocity) {
+        float[] result = {
+                velocity[0] * (180 / (float)Math.PI),
+                velocity[1] * (180 / (float)Math.PI),
+                velocity[2] * (180 / (float)Math.PI),
+        };
+
+        return result;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
 //        synchronized (this) {
@@ -142,9 +152,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     sample[2] = resultAcc[2];
                     break;
                 case Sensor.TYPE_GYROSCOPE:
-                    sample[3] = event.values[0];
-                    sample[4] = event.values[1];
-                    sample[5] = event.values[2];
+                    float[] resultGyr = convertAngularVelocity(event.values);
+
+                    sample[3] = resultGyr[0];
+                    sample[4] = resultGyr[1];
+                    sample[5] = resultGyr[2];
                     break;
             }
 
