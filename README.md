@@ -103,7 +103,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 53474 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 53420 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -126,8 +126,14 @@ K.clear_session()
 ```python
 ## wget UCD dataset + all .npy files and dump into ./data dir
 
-# !mkdir data
+if not os.path.exists('/data'):
+    os.makedirs('/data')
+
+if not os.path.exists('/accel'):
+    os.makedirs('/accel')
+
 !wget -P ./data 'http://abdoelali.com/data/mobilehci2018_tutorial_data.zip'
+!wget -P ./accel 'http://abdoelali.com/accel/accel_only.zip'
 ```
 
     --2018-08-13 17:26:04--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
@@ -149,6 +155,10 @@ K.clear_session()
 with zipfile.ZipFile('./data/mobilehci2018_tutorial_data.zip','r') as zipref:
     zipref.extractall('./data/')
 os.remove('./data/mobilehci2018_tutorial_data.zip')
+
+with zipfile.ZipFile('./accel/accel_only.zip','r') as zipref:
+    zipref.extractall('./accel/')
+os.remove('./data/accel_only.zip')
 ```
 
 ### Preprocressing
@@ -538,7 +548,7 @@ plt.show()
 
 ```python
 ## set up a plots dir
-plot_dir = './plots/'
+plot_dir = './plots/activity_vis/'
 
 ## two functions below to plot your data, and save them to disk
 def plot_activity(activity, df,i=0, j=100):
@@ -700,7 +710,7 @@ poolingWindowSz = 2
 numNueronsFCL1 = 128
 numNueronsFCL2 = 128
 # number of epochs
-Epochs = 20
+Epochs = 10
 # batchsize
 batchSize = 10
 # number of total clases
