@@ -8,7 +8,7 @@ Tasks:
 
 - experiment with different training dataset (e.g., WISDM Actitracker)
 - collect Android test set with N subjects (e.g., find sensor logger in Google Play store)
-- compare sensor data statistics from Android and MotionNode access + gyr sensors
+- better visualization of sensor data statistics from Android and MotionNode access + gyr sensors
 - experiment with other variables like age
 
 ## Preprocessing
@@ -19,9 +19,10 @@ Tasks:
 
 ## Network choice & optimization
 
+- experiment with accel (shown already) or gyro only
 - experiment with CNN only or LSTM only model
-- implement early stopping
-- implement grid search
+- implement early stopping, grid search
+- run cross-val over whole dataset for better deployed model performance
 
 ## App UI
 
