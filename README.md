@@ -103,7 +103,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 53420 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 53730 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -430,6 +430,8 @@ From left to right:
 4. gyro_x, w/ unit dps (degrees per second)
 5. gyro_y, w/ unit dps
 6. gyro_z, w/ unit dps
+
+BMI MotionNode sensor spec sheet: https://www.motionnode.com/technology.html 
 
 ============
 ## Android Nexus 5 sensors
