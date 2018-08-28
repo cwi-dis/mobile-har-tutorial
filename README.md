@@ -24,10 +24,8 @@ from keras import backend as K
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score, LeaveOneGroupOut
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.LeaveOneGroupOut.html#sklearn.model_selection.LeaveOneGroupOut
-
 from scipy import stats
 import scipy.io
-import dill
 
 import pandas as pd
 import numpy as np
@@ -91,7 +89,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 48516 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 47409 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -686,7 +684,7 @@ print(df['activity'].value_counts())
 ## UNCOMMENT below line for segmenting the signal in overlapping windows of 90 samples with 50% overlap
 # segments, labels, subjects = segment_signal(df)
 
-## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data
+## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data.
 segments = pickle.load(open('./data/segments_90_logo.p', 'rb'), encoding='latin1')
 labels = pickle.load(open('./data/labels_90_logo.p','rb'), encoding='latin1')
 subjects = pickle.load(open('./data/subjects_90_logo.p','rb'),encoding='latin1')
@@ -837,6 +835,10 @@ tf.get_default_graph()
 
 cvscores = []
 
+
+if not os.path.exists('./trainHistoryDict'):
+    os.makedirs('./trainHistoryDict')
+
 for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
 
     print('Training on fold ' + str(index+1) + '/14...') ## 14 due to number of subjects in our dataset
@@ -857,8 +859,8 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     ## fit the model
     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(np.expand_dims(testX,1),np.expand_dims(testY,1)), epochs=Epochs,batch_size=batchSize,verbose=2)
     
-#     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
-#     dill.dump(history, open( './history/model_' + str(index) + '_history.p','wb'))
+    with open('trainHistoryDict/train_history_dict_' + str(index), 'wb') as file_pi:
+        pickle.dump(history.history, file_pi)
 
     ## evaluate the model
     score = model.evaluate(np.expand_dims(testX,1),np.expand_dims(testY,1),verbose=2)
@@ -869,17 +871,17 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
 print('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 
 ## Save your model!
-model.save('model_had_lstm_logo.h5')
-model.save_weights('model_weights_had_lstm_logo.h5')
-np.save('groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
-np.save('testData_had_lstm_logo.npy',np.expand_dims(testX,1))
+model.save('./data/model_had_lstm_logo.h5')
+model.save_weights('./data/model_weights_had_lstm_logo.h5')
+np.save('./data/groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
+np.save('./data/testData_had_lstm_logo.npy',np.expand_dims(testX,1))
 
 ## write to JSON, in case you wanrt to work with that data format later when inspecting your model
 with open('./data/model_had_logo.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 ## write cvscores to file
-with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
+with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'w') as cvs_file:
     cvs_file.write('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 ```
 
@@ -975,7 +977,7 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 
 ```python
 ## the acc of our combined 'logo' models is 71.74%!
-with open('./train_history/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
+with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
     cvs = cvs_scores.read()
 print(cvs)
 ```
@@ -991,6 +993,9 @@ Based on work by Muhammad Shahnawaz.
 
 NOTE: keep in mind we are only looking at Model 14 given our 'logo' approach! 
 '''
+
+if not os.path.exists('./plots'):
+    os.makedirs('./plots')
 
 ## define a function for plotting the confusion matrix
 ## takes cmNormalized
@@ -1119,6 +1124,12 @@ plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight')
 ```
 
 ### Freeze and inspect Keras model graphs
+
+
+```python
+if not os.path.exists('./tensorflow_pb_models'):
+    os.makedirs('./tensorflow_pb_models')
+```
 
 
 ```python
