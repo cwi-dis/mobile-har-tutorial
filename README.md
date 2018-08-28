@@ -54,6 +54,9 @@ sns.set(style='whitegrid', palette='muted', font_scale=1.5)
 K.clear_session()
 ```
 
+    Using TensorFlow backend.
+
+
 
 ```python
 ## install all necessary python 2.7 packages
@@ -88,64 +91,80 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 53730 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 48516 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
 ```python
+# If GPU is not available: 
+# GPU_USE = '/cpu:0'
+# config = tf.ConfigProto(device_count = {"GPU": 0})
+
+
+# If GPU is available: 
+config = tf.ConfigProto()
+config.log_device_placement = True
+config.allow_soft_placement = True
+config.gpu_options.allocator_type = 'BFC'
+
+# Limit the maximum memory used
+config.gpu_options.per_process_gpu_memory_fraction = 0.1
+
+# set session config
+tf.keras.backend.set_session(tf.Session(config=config))
+```
+
+
+```python
 ## check tensorflow version
-!python -W ignore -c 'import tensorflow as tf; print(tf.__version__)'  # for Python 2
+!python3 -W ignore -c 'import tensorflow as tf; print(tf.__version__)'  # for Python 2
 
 ## check python version
-!python --version
+!python3 --version
 
 ## gradle TF build repo
 # https://mvnrepository.com/artifact/org.tensorflow/tensorflow-android/1.5.0-rc1
 ```
 
     1.9.0
-    Python 2.7.14 :: Anaconda custom (64-bit)
+    Python 3.6.5
 
 
 
 ```python
 ## wget UCD dataset + all .npy files and dump into ./data dir
 
-if not os.path.exists('/data'):
-    os.makedirs('/data')
+if not os.path.exists('./data'):
+    os.makedirs('./data')
 
-if not os.path.exists('/accel'):
-    os.makedirs('/accel')
+if not os.path.exists('./accel'):
+    os.makedirs('./accel')
 
 !wget -P ./data 'http://abdoelali.com/data/mobilehci2018_tutorial_data.zip'
-!wget -P ./accel 'http://abdoelali.com/accel/accel_only.zip'
+!wget -P ./accel 'http://abdoelali.com/data/accel_only.zip'
 ```
 
-    --2018-08-13 17:26:04--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
+    --2018-08-28 01:27:39--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
     Resolving abdoelali.com (abdoelali.com)... 160.153.1.1
     Connecting to abdoelali.com (abdoelali.com)|160.153.1.1|:80... connected.
     HTTP request sent, awaiting response... 200 OK
-    Length: 298100126 (284M) [application/zip]
+    Length: 273858391 (261M) [application/zip]
     Saving to: ‘./data/mobilehci2018_tutorial_data.zip’
     
-    mobilehci2018_tutor 100%[=====================>] 284.29M   310KB/s   in 18m 27ss
+    mobilehci2018_tutor 100%[===================>] 261.17M  45.8MB/s    in 6.0s    
     
-    2018-08-13 17:44:32 (263 KB/s) - ‘./data/mobilehci2018_tutorial_data.zip’ saved [298100126/298100126]
+    2018-08-28 01:27:46 (43.6 MB/s) - ‘./data/mobilehci2018_tutorial_data.zip’ saved [273858391/273858391]
+    
+    --2018-08-28 01:27:46--  http://abdoelali.com/data/accel_only.zip
+    Resolving abdoelali.com (abdoelali.com)... 160.153.1.1
+    Connecting to abdoelali.com (abdoelali.com)|160.153.1.1|:80... connected.
+    HTTP request sent, awaiting response... 200 OK
+    Length: 86931679 (83M) [application/zip]
+    Saving to: ‘./accel/accel_only.zip.1’
+    
+    accel_only.zip.1    100%[===================>]  82.90M  37.9MB/s    in 2.2s    
+    
+    2018-08-28 01:27:48 (37.9 MB/s) - ‘./accel/accel_only.zip.1’ saved [86931679/86931679]
     
 
 
@@ -158,7 +177,7 @@ os.remove('./data/mobilehci2018_tutorial_data.zip')
 
 with zipfile.ZipFile('./accel/accel_only.zip','r') as zipref:
     zipref.extractall('./accel/')
-os.remove('./data/accel_only.zip')
+os.remove('./accel/accel_only.zip')
 ```
 
 ### Preprocressing
@@ -365,27 +384,27 @@ print('df size ' + str(len(df)))
 print(df[1:10])
 ```
 
-      subject     acc_x     acc_y     acc_z     gyr_x     gyr_y     gyr_z  \
-    1       2 -0.657132  0.805976 -0.149374  0.692599 -0.428895 -0.506021   
-    2       2 -0.653698  0.809595 -0.153035  0.288852  0.375579 -0.504430   
-    3       2 -0.650265  0.809595 -0.149374  0.287940  0.374394 -0.101278   
-    4       2 -0.646831  0.805976 -0.149374  0.287031  0.373212 -0.502525   
-    5       2 -0.650265  0.809595 -0.149374  0.286124 -0.431087 -0.099380   
-    6       2 -0.650265  0.809595 -0.149374  0.285221  0.373394 -0.500633   
-    7       2 -0.653698  0.809595 -0.149374 -0.117240 -0.430905 -0.499058   
-    8       2 -0.657132  0.809595 -0.149374 -0.116870 -0.027984 -0.095924   
-    9       2 -0.653698  0.805976 -0.153035  0.285060 -0.429456 -0.497187   
+      subject     acc_x     acc_y     acc_z     gyr_x      gyr_y     gyr_z  \
+    1       7  0.888076  0.425966 -0.211597 -8.287599 -11.061767  0.123535   
+    2       7  0.891510  0.425966 -0.211597 -8.287599 -11.061767  0.123535   
+    3       7  0.894944  0.429586 -0.211597 -0.789322  -1.004702 -0.025368   
+    4       7  0.891510  0.429586 -0.207937 -0.621181  -0.523508  0.196681   
+    5       7  0.894944  0.429586 -0.207937 -0.417196  -0.351597  0.132094   
+    6       7  0.891510  0.425966 -0.207937 -0.311717  -0.262703  0.098697   
+    7       7  0.894944  0.425966 -0.207937  0.072152  -0.208027  0.078155   
+    8       7  0.898378  0.425966 -0.207937  0.059232  -0.170776  0.064160   
+    9       7  0.894944  0.425966 -0.207937 -0.288966  -0.482402  0.053958   
     
-       activity  
-    1  Sleeping  
-    2  Sleeping  
-    3  Sleeping  
-    4  Sleeping  
-    5  Sleeping  
-    6  Sleeping  
-    7  Sleeping  
-    8  Sleeping  
-    9  Sleeping  
+            activity  
+    1  Elevator Down  
+    2  Elevator Down  
+    3  Elevator Down  
+    4  Elevator Down  
+    5  Elevator Down  
+    6  Elevator Down  
+    7  Elevator Down  
+    8  Elevator Down  
+    9  Elevator Down  
 
 
 ### Explore your dataset (through visualization)
@@ -490,61 +509,61 @@ plt.show()
     acc_x
     -3.3526623249053955
     6.931558132171631
-    0.782799482324
+    0.7827994823243808
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_1.png)
 
 
     acc_y
     -6.417827129364014
     4.949891567230225
-    0.201336618765
+    0.20133661876515005
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_3.png)
 
 
     acc_z
     -5.416336536407471
     4.539283275604248
-    -0.0619099863055
+    -0.061909986305492014
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_5.png)
 
 
     gyr_x
     -770.8486328125
     856.3609008789062
-    -0.413887145396
+    -0.4138871453964275
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_7.png)
 
 
     gyr_y
     -775.4454345703125
     559.6139526367188
-    -0.351748533882
+    -0.35174853388200816
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_9.png)
 
 
     gyr_z
     -808.1836547851562
     816.5776977539062
-    -0.174795881101
+    -0.17479588110103653
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_15_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_11.png)
 
 
 
@@ -583,51 +602,51 @@ plot_datasets(df)
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_0.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_1.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_1.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_2.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_2.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_3.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_3.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_4.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_4.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_5.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_5.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_6.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_6.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_7.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_7.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_8.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_8.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_9.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_9.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_10.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_10.png)
 
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_16_11.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_11.png)
 
 
 
@@ -638,7 +657,7 @@ plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
 
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_17_0.png)
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_18_0.png)
 
 
 
@@ -668,9 +687,9 @@ print(df['activity'].value_counts())
 # segments, labels, subjects = segment_signal(df)
 
 ## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data
-segments = pickle.load(open('./data/segments_90_logo.p', 'rb'))
-labels = pickle.load(open('./data/labels_90_logo.p','rb'))
-subjects = pickle.load(open('./data/subjects_90_logo.p','rb'))
+segments = pickle.load(open('./data/segments_90_logo.p', 'rb'), encoding='latin1')
+labels = pickle.load(open('./data/labels_90_logo.p','rb'), encoding='latin1')
+subjects = pickle.load(open('./data/subjects_90_logo.p','rb'),encoding='latin1')
 
 ## dump information to that file (UNCOMMENT to save fresh segmentation!)
 # pickle.dump(segments, open( './data/segments_90_logo.p','wb'))
@@ -836,7 +855,7 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     print(trainX.shape)
 
     ## fit the model
-    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
+    history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(np.expand_dims(testX,1),np.expand_dims(testY,1)), epochs=Epochs,batch_size=batchSize,verbose=2)
     
 #     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
 #     dill.dump(history, open( './history/model_' + str(index) + '_history.p','wb'))
@@ -864,14 +883,75 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
     cvs_file.write('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 ```
 
+    Training on fold 1/14...
+    sequential_1
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_1
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_1
+    conv_lst_m2d_1
+    time_distributed_1
+    dropout_1
+    time_distributed_2
+    dense_1
+    dense_2
+    time_distributed_3
+    dense_3
+    (58134, 90, 6, 1)
+
+
+
+    ---------------------------------------------------------------------------
+
+    ValueError                                Traceback (most recent call last)
+
+    <ipython-input-20-b1298f6d9bcf> in <module>()
+         24 
+         25     ## fit the model
+    ---> 26     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
+         27 
+         28 #     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
+
+
+    /usr/local/lib/python3.6/dist-packages/keras/engine/training.py in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
+        968                 val_x, val_y,
+        969                 sample_weight=val_sample_weight,
+    --> 970                 batch_size=batch_size)
+        971             if self._uses_dynamic_learning_phase():
+        972                 val_ins = val_x + val_y + val_sample_weights + [0.]
+
+
+    /usr/local/lib/python3.6/dist-packages/keras/engine/training.py in _standardize_user_data(self, x, y, sample_weight, class_weight, check_array_lengths, batch_size)
+        747             feed_input_shapes,
+        748             check_batch_axis=False,  # Don't enforce the batch size.
+    --> 749             exception_prefix='input')
+        750 
+        751         if y is not None:
+
+
+    /usr/local/lib/python3.6/dist-packages/keras/engine/training_utils.py in standardize_input_data(data, names, shapes, check_batch_axis, exception_prefix)
+        125                         ': expected ' + names[i] + ' to have ' +
+        126                         str(len(shape)) + ' dimensions, but got array '
+    --> 127                         'with shape ' + str(data_shape))
+        128                 if not check_batch_axis:
+        129                     data_shape = data_shape[1:]
+
+
+    ValueError: Error when checking input: expected conv_lst_m2d_1_input to have 5 dimensions, but got array with shape (4342, 90, 6, 1)
+
+
 
 ```python
 ## shape of data to feed frozen model later in Android code
 # print(testX[[1]].shape)
 ```
-
-    (1, 90, 6, 1)
-
 
 
 ```python
@@ -890,10 +970,6 @@ with open('cvscores_convlstm_logo.txt', 'w') as cvs_file:
 # print(trainX.reshape((None,50094, 90, 6, 1)))
 ```
 
-    (12467, 1, 12)
-    (50009, 90, 6, 1)
-
-
 ### Evaluate model, and plot confusion matrix + acc/loss graphs
 
 
@@ -903,9 +979,6 @@ with open('./train_history/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
     cvs = cvs_scores.read()
 print(cvs)
 ```
-
-    LeaveOneGroupOut cross-validation scores: 71.74% (+/- 9.49%)
-
 
 
 ```python
@@ -1009,64 +1082,6 @@ print(model.summary())
 
 ```
 
-    Loaded model from disk
-    acc: 78.37%
-    Baseline Error: 21.63%
-    [[ 32 272   0   0  16   0  24   0   0   0   0   0]
-     [ 29 276   0   0  10   0  25   0   2   1   0   1]
-     [  0   0 164  15   0   0   0   2   1   0   0   1]
-     [  0   0   6 317   1   1   0   1   3   0   0   2]
-     [  9 140   0   0 127   0  80   0   0   0   0   0]
-     [  0   0   0   0   0 556   0   0   0   0   0   0]
-     [  2   1  13   0  74   0 160   8  30   7   2  14]
-     [  0   0 212   1   1   0   2 408  16  46   1  10]
-     [  0   0   0   1   0   0   2   0 903  10  26   2]
-     [  1   0   0   0   0   0   0   6  56 432   3   2]
-     [  0   0   0   0   0   0   0   1  20   2 434   4]
-     [  0   0   4   1   5   1   1   2  18   2   1 732]]
-    Accuracy for each class is given below.
-    ('WalkForward :', 9.3, '%')
-    ('WalkLeft    :', 80.23, '%')
-    ('WalkRight   :', 89.62, '%')
-    ('WalkUp      :', 95.77, '%')
-    ('WalkDown    :', 35.67, '%')
-    ('RunForward  :', 100.0, '%')
-    ('JumpUp      :', 51.45, '%')
-    ('Sit         :', 58.54, '%')
-    ('Stand       :', 95.66, '%')
-    ('Sleep       :', 86.4, '%')
-    ('ElevatorUp  :', 94.14, '%')
-    ('ElevatorDown:', 95.44, '%')
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    conv_lst_m2d_14 (ConvLSTM2D) (None, None, 90, 6, 128)  264704    
-    _________________________________________________________________
-    time_distributed_40 (TimeDis (None, None, 45, 3, 128)  0         
-    _________________________________________________________________
-    dropout_14 (Dropout)         (None, None, 45, 3, 128)  0         
-    _________________________________________________________________
-    time_distributed_41 (TimeDis (None, None, 17280)       0         
-    _________________________________________________________________
-    dense_40 (Dense)             (None, None, 128)         2211968   
-    _________________________________________________________________
-    dense_41 (Dense)             (None, None, 128)         16512     
-    _________________________________________________________________
-    time_distributed_42 (TimeDis (None, None, 128)         0         
-    _________________________________________________________________
-    dense_42 (Dense)             (None, None, 12)          1548      
-    =================================================================
-    Total params: 2,494,732
-    Trainable params: 2,494,732
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
-
-
 
 ```python
 ## plot acc and loss plot of last stored model weights in history variable
@@ -1096,21 +1111,6 @@ plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
 plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight')
 ```
-
-    ['acc', 'loss', 'val_acc', 'val_loss']
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_1.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_2.png)
-
-
-
-    <matplotlib.figure.Figure at 0x1845b52d0>
-
 
 
 ```python
@@ -1174,12 +1174,6 @@ graph_io.write_graph(constant_graph, output_fld, output_graph_name, as_text=Fals
 print('saved the constant graph (ready for inference) at: ', osp.join(output_fld, output_graph_name))
 ```
 
-    ('output nodes names are: ', ['output_node0'])
-    INFO:tensorflow:Froze 10 variables.
-    INFO:tensorflow:Converted 10 variables to const ops.
-    ('saved the constant graph (ready for inference) at: ', 'tensorflow_model/model_hcd_test.h5.pb')
-
-
 
 ```python
 ## Method 1 inspect output
@@ -1235,17 +1229,6 @@ frozen_graph = freeze_session(K.get_session(), output_names=[out.op.name for out
 tf.train.write_graph(frozen_graph, './tensorflow_pb_models/', 'ucd_model_test2.pb', as_text=False)
 ```
 
-    INFO:tensorflow:Froze 42 variables.
-    INFO:tensorflow:Converted 42 variables to const ops.
-
-
-
-
-
-    './tensorflow_model/ucd_model_test2.pb'
-
-
-
 
 ```python
 ## method 2 inspect output
@@ -1265,27 +1248,11 @@ saver = tf.train.Saver()
 saver.save(K.get_session(), '/tmp/keras_model_test.ckpt')
 ```
 
-    OUTPUT/truediv
-
-
-
-
-
-    '/tmp/keras_model_test.ckpt'
-
-
-
 
 ```python
 !python -W ignore /Users/aelali/anaconda/lib/python2.7/site-packages/tensorflow/python/tools/freeze_graph.py --input_meta_graph=/tmp/keras_model_test.ckpt.meta \
 --input_checkpoint=/tmp/keras_model_test.ckpt --output_graph=./tensorflow_model/ucd_keras_frozen3_TEST.pb --output_node_names='OUTPUT/truediv' --input_binary=true
 ```
-
-    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
-      from ._conv import register_converters as _register_converters
-    Loaded meta graph file '/tmp/keras_model_test.ckpt.meta
-    2018-08-06 19:19:39.195286: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
-
 
 
 ```python
@@ -1339,11 +1306,6 @@ freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
                           clear_devices, '')
 ```
 
-    INFO:tensorflow:Restoring parameters from graph_test/saved_checkpoint-0
-    INFO:tensorflow:Froze 10 variables.
-    INFO:tensorflow:Converted 10 variables to const ops.
-
-
 ### Inspect graphs with TensorBoard 
 
 
@@ -1366,9 +1328,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 ```
-
-    Model Imported. Visualize by running: tensorboard --logdir=/tmp/tensorflow_logdir
-
 
 
 ```python
@@ -1407,75 +1366,6 @@ for op in graph.get_operations():
     print(op.name)    
 ```
 
-    prefix/keras_learning_phase/input
-    prefix/keras_learning_phase
-    prefix/conv2d_1_input
-    prefix/conv2d_1/kernel
-    prefix/conv2d_1/kernel/read
-    prefix/conv2d_1/bias
-    prefix/conv2d_1/bias/read
-    prefix/conv2d_1/convolution
-    prefix/conv2d_1/BiasAdd
-    prefix/conv2d_1/Relu
-    prefix/max_pooling2d_1/MaxPool
-    prefix/dropout_1/cond/Switch
-    prefix/dropout_1/cond/switch_t
-    prefix/dropout_1/cond/pred_id
-    prefix/dropout_1/cond/mul/y
-    prefix/dropout_1/cond/mul/Switch
-    prefix/dropout_1/cond/mul
-    prefix/dropout_1/cond/dropout/keep_prob
-    prefix/dropout_1/cond/dropout/Shape
-    prefix/dropout_1/cond/dropout/random_uniform/min
-    prefix/dropout_1/cond/dropout/random_uniform/max
-    prefix/dropout_1/cond/dropout/random_uniform/RandomUniform
-    prefix/dropout_1/cond/dropout/random_uniform/sub
-    prefix/dropout_1/cond/dropout/random_uniform/mul
-    prefix/dropout_1/cond/dropout/random_uniform
-    prefix/dropout_1/cond/dropout/add
-    prefix/dropout_1/cond/dropout/Floor
-    prefix/dropout_1/cond/dropout/div
-    prefix/dropout_1/cond/dropout/mul
-    prefix/dropout_1/cond/Switch_1
-    prefix/dropout_1/cond/Merge
-    prefix/flatten_1/Shape
-    prefix/flatten_1/strided_slice/stack
-    prefix/flatten_1/strided_slice/stack_1
-    prefix/flatten_1/strided_slice/stack_2
-    prefix/flatten_1/strided_slice
-    prefix/flatten_1/Const
-    prefix/flatten_1/Prod
-    prefix/flatten_1/stack/0
-    prefix/flatten_1/stack
-    prefix/flatten_1/Reshape
-    prefix/dense_1/kernel
-    prefix/dense_1/kernel/read
-    prefix/dense_1/bias
-    prefix/dense_1/bias/read
-    prefix/dense_1/MatMul
-    prefix/dense_1/BiasAdd
-    prefix/dense_1/Relu
-    prefix/dense_2/kernel
-    prefix/dense_2/kernel/read
-    prefix/dense_2/bias
-    prefix/dense_2/bias/read
-    prefix/dense_2/MatMul
-    prefix/dense_2/BiasAdd
-    prefix/dense_2/Relu
-    prefix/dense_3/kernel
-    prefix/dense_3/kernel/read
-    prefix/dense_3/bias
-    prefix/dense_3/bias/read
-    prefix/dense_3/MatMul
-    prefix/dense_3/BiasAdd
-    prefix/dense_3/Softmax
-    prefix/strided_slice/stack
-    prefix/strided_slice/stack_1
-    prefix/strided_slice/stack_2
-    prefix/strided_slice
-    prefix/output_node0
-
-
 
 ```python
 ## now test if the frozen model performs predictions as intended
@@ -1499,11 +1389,6 @@ with tf.Session(graph=graph) as sess:
     
     print('prediction correct? ' + str(np.array_equal(l,z)))
 ```
-
-    label: [[0 0 0 0 0 1 0]]
-    prediction: [[0 0 0 0 0 0 0 0 0 1 0 0]]
-    prediction correct? False
-
 
 ### Check mismatch between sensor readings of dataset and Android sensors
 
@@ -1556,45 +1441,6 @@ plt.plot(usc_sit_df_gyr_z)
 plt.show()
 ```
 
-    2811490
-    sitting mean usc-had acc_x: 0.827551787045
-    sitting std usc-had acc_x: 0.08702539053
-    sitting mean usc-had acc_y: 0.471513915458
-    sitting std usc-had acc_y: 0.17719417357
-    sitting mean usc-had acc_z: 0.192641908857
-    sitting std usc-had acc_z: 0.170583849396
-    sitting mean usc-had gyr_x: 0.192641908857
-    sitting std usc-had gyr_x: 0.170583849396
-    sitting mean usc-had gyr_y: 0.192641908857
-    sitting std usc-had gyr_y: 3.50554266571
-    sitting mean usc-had gyr_z: 0.0909091543985
-    sitting std usc-had gyr_z: 4.13647140758
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_1.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_2.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_3.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_4.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_5.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_51_6.png)
-
-
 
 ```python
 ## Android sensor reading samples inspect
@@ -1643,42 +1489,3 @@ plt.show()
 plt.plot(sit_gyr_z)
 plt.show()
 ```
-
-    sitting android acc_x size: 300
-    sitting mean android acc_x: 5.79502145433
-    sitting std android acc_x: 0.154638607089
-    sitting mean android acc_y: 3.52781603567
-    sitting std android acc_y: 0.358853869752
-    sitting mean android acc_z: 7.55052292033
-    sitting std android acc_z: 0.238393949719
-    sitting mean android gyr_x: -0.0190292144043
-    sitting std android gyr_x: 0.0754486040928
-    sitting mean android gyr_y: -0.00895877374873
-    sitting std android gyr_y: 0.0466460458106
-    sitting mean android gyr_z: -0.0209356976821
-    sitting std android gyr_z: 0.0733560528854
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_1.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_2.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_3.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_4.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_5.png)
-
-
-
-![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_6.png)
-
