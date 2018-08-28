@@ -21,7 +21,7 @@ Tasks:
 
 - experiment with accel (shown already) or gyro only
 - experiment with CNN only or LSTM only model
-- implement early stopping, grid search
+- experiment with early stopping, grid search, L2 regularization, batch size
 - run cross-val over whole dataset for better deployed model performance
 
 ## App UI
