@@ -182,7 +182,22 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 47409 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
+    [NbConvertApp] Writing 74043 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
