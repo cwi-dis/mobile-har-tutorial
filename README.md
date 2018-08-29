@@ -24,6 +24,7 @@ from keras import backend as K
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score, LeaveOneGroupOut
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.LeaveOneGroupOut.html#sklearn.model_selection.LeaveOneGroupOut
+
 from scipy import stats
 import scipy.io
 
@@ -36,7 +37,7 @@ import matplotlib.cm
 import seaborn as sns
 import pickle
 import math
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 import pylab
 import os
 import os.path as osp
@@ -52,13 +53,105 @@ sns.set(style='whitegrid', palette='muted', font_scale=1.5)
 K.clear_session()
 ```
 
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._conv import register_converters as _register_converters
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+      from ._conv import register_converters as _register_converters
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/__init__.py:45: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import h5a, h5d, h5ds, h5f, h5fd, h5g, h5r, h5s, h5t, h5p, h5z
+    /Users/aelali/anaconda/lib/python2.7/site-packages/h5py/_hl/group.py:22: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .. import h5g, h5i, h5o, h5r, h5t, h5l, h5p
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/lil.py:19: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _csparsetools
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:165: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._shortest_path import shortest_path, floyd_warshall, dijkstra,\
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/_validation.py:5: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._tools import csgraph_to_dense, csgraph_from_dense,\
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:167: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._traversal import breadth_first_order, depth_first_order, \
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:169: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._min_spanning_tree import minimum_spanning_tree
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/sparse/csgraph/__init__.py:170: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._reordering import reverse_cuthill_mckee, maximum_bipartite_matching, \
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/linalg/basic.py:17: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._solve_toeplitz import levinson
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/linalg/__init__.py:207: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._decomp_update import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/special/__init__.py:640: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._ufuncs import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/special/_ellip_harm.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._ellip_harm_2 import _ellipsoid, _ellipsoid_norm
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/interpolate/_bsplines.py:10: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _bspl
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/__init__.py:95: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .ckdtree import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/__init__.py:96: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .qhull import *
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/_spherical_voronoi.py:18: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _voronoi
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/spatial/distance.py:122: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _hausdorff
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/ndimage/measurements.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _ni_label
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/_libs/__init__.py:3: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .tslib import iNaT, NaT, Timestamp, Timedelta, OutOfBoundsDatetime
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/__init__.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import (hashtable as _hashtable,
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/dtypes/common.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import algos, lib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/util/hashing.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import hashing, tslib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/indexes/base.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import (lib, index as libindex, tslib as libts,
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/indexes/datetimelike.py:28: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs.period import Period
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/sparse/array.py:32: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.sparse as splib
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/window.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.window as _window
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/groupby.py:66: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import lib, groupby as libgroupby, Timestamp, NaT, iNaT
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/core/reshape/reshape.py:30: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from pandas._libs import algos as _algos, reshape as _reshape
+    /Users/aelali/anaconda/lib/python2.7/site-packages/pandas/io/parsers.py:43: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      import pandas._libs.parsers as parsers
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/utils/__init__.py:10: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .murmurhash import murmurhash3_32
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/optimize/_trlib/__init__.py:1: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._trlib import TRLIBQuadraticSubproblem
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/optimize/_numdiff.py:10: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._group_columns import group_dense, group_sparse
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/stats/_continuous_distns.py:18: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _stats
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/utils/extmath.py:24: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._logistic_sigmoid import _log_logistic_sigmoid
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/utils/extmath.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .sparsefuncs_fast import csr_row_norms
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/metrics/cluster/supervised.py:23: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .expected_mutual_info_fast import expected_mutual_information
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/metrics/pairwise.py:30: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .pairwise_fast import _chi2_kernel_fast, _sparse_manhattan
     Using TensorFlow backend.
+    /Users/aelali/anaconda/lib/python2.7/site-packages/sklearn/utils/random.py:10: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._random import sample_without_replacement
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/io/matlab/mio4.py:18: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .mio_utils import squeeze_element, chars_to_strings
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/io/matlab/mio5.py:98: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .mio5_utils import VarReader5
+    /Users/aelali/anaconda/lib/python2.7/site-packages/statsmodels/nonparametric/kde.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from .linbin import fast_linbin
+    /Users/aelali/anaconda/lib/python2.7/site-packages/statsmodels/nonparametric/smoothers_lowess.py:11: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from ._smoothers_lowess import lowess as _lowess
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/cluster/vq.py:78: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _vq
+    /Users/aelali/anaconda/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:178: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+      from . import _hierarchy, _optimal_leaf_ordering
 
 
 
 ```python
 ## install all necessary python 2.7 packages
-# !pip install -r requirements.txt
+# !pip3 install -r requirements.txt
 ```
 
 
@@ -105,8 +198,9 @@ config.log_device_placement = True
 config.allow_soft_placement = True
 config.gpu_options.allocator_type = 'BFC'
 
+
 # Limit the maximum memory used
-config.gpu_options.per_process_gpu_memory_fraction = 0.1
+# config.gpu_options.per_process_gpu_memory_fraction = 0.1
 
 # set session config
 tf.keras.backend.set_session(tf.Session(config=config))
@@ -120,12 +214,17 @@ tf.keras.backend.set_session(tf.Session(config=config))
 ## check python version
 !python3 --version
 
+## check matplotlib version
+!python3 -c 'import matplotlib; print(matplotlib.__version__, matplotlib.__file__)'
+
+
 ## gradle TF build repo
 # https://mvnrepository.com/artifact/org.tensorflow/tensorflow-android/1.5.0-rc1
 ```
 
     1.9.0
     Python 3.6.5
+    2.2.3 /home/abdo/.local/lib/python3.6/site-packages/matplotlib/__init__.py
 
 
 
@@ -142,27 +241,27 @@ if not os.path.exists('./accel'):
 !wget -P ./accel 'http://abdoelali.com/data/accel_only.zip'
 ```
 
-    --2018-08-28 01:27:39--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
+    --2018-08-29 09:35:52--  http://abdoelali.com/data/mobilehci2018_tutorial_data.zip
     Resolving abdoelali.com (abdoelali.com)... 160.153.1.1
     Connecting to abdoelali.com (abdoelali.com)|160.153.1.1|:80... connected.
     HTTP request sent, awaiting response... 200 OK
     Length: 273858391 (261M) [application/zip]
-    Saving to: ‘./data/mobilehci2018_tutorial_data.zip’
+    Saving to: ‘./data/mobilehci2018_tutorial_data.zip.1’
     
-    mobilehci2018_tutor 100%[===================>] 261.17M  45.8MB/s    in 6.0s    
+    mobilehci2018_tutor 100%[===================>] 261.17M  22.4MB/s    in 18s     
     
-    2018-08-28 01:27:46 (43.6 MB/s) - ‘./data/mobilehci2018_tutorial_data.zip’ saved [273858391/273858391]
+    2018-08-29 09:36:11 (14.2 MB/s) - ‘./data/mobilehci2018_tutorial_data.zip.1’ saved [273858391/273858391]
     
-    --2018-08-28 01:27:46--  http://abdoelali.com/data/accel_only.zip
+    --2018-08-29 09:36:11--  http://abdoelali.com/data/accel_only.zip
     Resolving abdoelali.com (abdoelali.com)... 160.153.1.1
     Connecting to abdoelali.com (abdoelali.com)|160.153.1.1|:80... connected.
     HTTP request sent, awaiting response... 200 OK
     Length: 86931679 (83M) [application/zip]
     Saving to: ‘./accel/accel_only.zip.1’
     
-    accel_only.zip.1    100%[===================>]  82.90M  37.9MB/s    in 2.2s    
+    accel_only.zip.1    100%[===================>]  82.90M  18.4MB/s    in 4.2s    
     
-    2018-08-28 01:27:48 (37.9 MB/s) - ‘./accel/accel_only.zip.1’ saved [86931679/86931679]
+    2018-08-29 09:36:15 (19.6 MB/s) - ‘./accel/accel_only.zip.1’ saved [86931679/86931679]
     
 
 
@@ -205,27 +304,21 @@ def featureNormalizeZscore(data):
     sigma = np.std(data,axis=0)
     return (data-mu)/sigma
 
-# tf.keras.utils.normalize(
-#     x,
-#     axis=-1,
-#     order=2
-# )
-    
 # find the min and max values for each column
 def dataset_minmax(data):
-	minmax = list()
-	for i in range(len(data[0])):
-		col_values = [row[i] for row in data]
-		value_min = min(col_values)
-		value_max = max(col_values)
-		minmax.append([value_min, value_max])
-	return minmax
+    minmax = list()
+    for i in range(len(data[0])):
+        col_values = [row[i] for row in data]
+        value_min = min(col_values)
+        value_max = max(col_values)
+        minmax.append([value_min, value_max])
+    return minmax
  
 # rescale dataset columns to the range 0-1
 def normalize_dataset(data, minmax):
-	for row in data:
-		for i in range(len(row)):
-			row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
+    for row in data:
+        for i in range(len(row)):
+            row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
             
 ## compute Euclidean Norm
 def featureNormalizeEuclidean(data):
@@ -327,8 +420,7 @@ subject_id = []
 df = None
 
 for i in range(840):
-    for j in sensor_readings[i]:
-         
+    for j in sensor_readings[i]:   
         acc_x.append(j[0]) # acc_x
         acc_y.append(j[1]) # acc_y
         acc_z.append(j[2]) # acc_z
@@ -382,34 +474,34 @@ print('df size ' + str(len(df)))
 print(df[1:10])
 ```
 
-      subject     acc_x     acc_y     acc_z     gyr_x      gyr_y     gyr_z  \
-    1       7  0.888076  0.425966 -0.211597 -8.287599 -11.061767  0.123535   
-    2       7  0.891510  0.425966 -0.211597 -8.287599 -11.061767  0.123535   
-    3       7  0.894944  0.429586 -0.211597 -0.789322  -1.004702 -0.025368   
-    4       7  0.891510  0.429586 -0.207937 -0.621181  -0.523508  0.196681   
-    5       7  0.894944  0.429586 -0.207937 -0.417196  -0.351597  0.132094   
-    6       7  0.891510  0.425966 -0.207937 -0.311717  -0.262703  0.098697   
-    7       7  0.894944  0.425966 -0.207937  0.072152  -0.208027  0.078155   
-    8       7  0.898378  0.425966 -0.207937  0.059232  -0.170776  0.064160   
-    9       7  0.894944  0.425966 -0.207937 -0.288966  -0.482402  0.053958   
+      subject     acc_x     acc_y     acc_z      gyr_x      gyr_y      gyr_z  \
+    1      10  1.008259 -0.051760 -0.017609  20.392937   3.212698  17.658215   
+    2      10  0.991090 -0.033664 -0.024929  18.781609   1.598059  18.463879   
+    3      10  0.987656 -0.033664 -0.017609  16.767448  -1.219244  18.061047   
+    4      10  0.970487 -0.004711  0.008012  15.961784  -4.441900  14.838390   
+    5      10  0.949885 -0.004711  0.029973  15.558952  -8.067389  14.032726   
+    6      10  0.939583  0.017004  0.059254  12.336296 -12.498541  11.212902   
+    7      10  0.939583  0.053195  0.103176  10.724968 -16.526861   7.587414   
+    8      10  0.936149  0.071291  0.132458  10.724968 -20.555182   3.961926   
+    9      10  0.936149  0.082148  0.147098   9.113640 -22.569342   1.544933   
     
-            activity  
-    1  Elevator Down  
-    2  Elevator Down  
-    3  Elevator Down  
-    4  Elevator Down  
-    5  Elevator Down  
-    6  Elevator Down  
-    7  Elevator Down  
-    8  Elevator Down  
-    9  Elevator Down  
+              activity  
+    1  Walking Forward  
+    2  Walking Forward  
+    3  Walking Forward  
+    4  Walking Forward  
+    5  Walking Forward  
+    6  Walking Forward  
+    7  Walking Forward  
+    8  Walking Forward  
+    9  Walking Forward  
 
 
 ### Explore your dataset (through visualization)
 
 
 ```python
-## explore your overal accel and gyro values: min, max, mean, and plot over time
+## explore your overall accel and gyro values: min, max, mean, and plot over time
 
 ''' 
 ## USC-HAD Sensors
@@ -507,7 +599,7 @@ plt.show()
     acc_x
     -3.3526623249053955
     6.931558132171631
-    0.7827994823243808
+    0.7827994823243803
 
 
 
@@ -537,7 +629,7 @@ plt.show()
     gyr_x
     -770.8486328125
     856.3609008789062
-    -0.4138871453964275
+    -0.41388714539642746
 
 
 
@@ -547,7 +639,7 @@ plt.show()
     gyr_y
     -775.4454345703125
     559.6139526367188
-    -0.35174853388200816
+    -0.3517485338820081
 
 
 
@@ -557,7 +649,7 @@ plt.show()
     gyr_z
     -808.1836547851562
     816.5776977539062
-    -0.17479588110103653
+    -0.17479588110103636
 
 
 
@@ -567,12 +659,15 @@ plt.show()
 
 ```python
 ## set up a plots dir
+
 plot_dir = './plots/activity_vis/'
 
+os.makedirs(plot_dir, exist_ok=True)
+    
 ## two functions below to plot your data, and save them to disk
 def plot_activity(activity, df,i=0, j=100):
     data = df[df['activity'] == activity][['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']][i:j]
-    axis = data.plot(subplots=True, figsize=(16, 6), 
+    axis = data.plot(subplots=True, figsize=(16, 12), 
                      title=activity)
     for ax in axis:
         ax.legend(loc='lower left', bbox_to_anchor=(1.0, 0.5))
@@ -650,7 +745,7 @@ plot_datasets(df)
 
 ```python
 ## check class districtions, and save fig to disk
-df['activity'].value_counts().plot(kind='bar', title='Plotting records by activity type', figsize=(10, 4),align='center');
+df['activity'].value_counts().plot(kind='bar', color=['r','g','b','k','y','m','c'], title='Plotting records by activity type', figsize=(10, 4),align='center');
 plt.savefig(plot_dir + 'sample_dist.pdf', bbox_inches='tight')
 ```
 
@@ -684,7 +779,7 @@ print(df['activity'].value_counts())
 ## UNCOMMENT below line for segmenting the signal in overlapping windows of 90 samples with 50% overlap
 # segments, labels, subjects = segment_signal(df)
 
-## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data.
+## COMMENT below segments + labels files if you want to segment afresh . open a file, where you stored the pickled data
 segments = pickle.load(open('./data/segments_90_logo.p', 'rb'), encoding='latin1')
 labels = pickle.load(open('./data/labels_90_logo.p','rb'), encoding='latin1')
 subjects = pickle.load(open('./data/subjects_90_logo.p','rb'),encoding='latin1')
@@ -830,14 +925,15 @@ def Conv2D_LSTM_Model():
 ```python
 ## Leave One Group Out for train-test split, and train the network!
 
+## NOTE: training with Epochs=2 and BatchSize=32 for illustrative purposes.  
+
 ## reset and initialize graph
 tf.get_default_graph()
 
+if not os.path.exists('./train_history'):
+    os.makedirs('./train_history')
+    
 cvscores = []
-
-
-if not os.path.exists('./trainHistoryDict'):
-    os.makedirs('./trainHistoryDict')
 
 for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, labels, groups)):
 
@@ -859,7 +955,7 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
     ## fit the model
     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(np.expand_dims(testX,1),np.expand_dims(testY,1)), epochs=Epochs,batch_size=batchSize,verbose=2)
     
-    with open('trainHistoryDict/train_history_dict_' + str(index), 'wb') as file_pi:
+    with open('train_history/train_history_dict_' + str(index), 'wb') as file_pi:
         pickle.dump(history.history, file_pi)
 
     ## evaluate the model
@@ -871,17 +967,17 @@ for index, (train_index, test_index) in enumerate(logo.split(reshapedSegments, l
 print('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 
 ## Save your model!
-model.save('./data/model_had_lstm_logo.h5')
-model.save_weights('./data/model_weights_had_lstm_logo.h5')
-np.save('./data/groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
-np.save('./data/testData_had_lstm_logo.npy',np.expand_dims(testX,1))
+model.save('model_had_lstm_logo.h5')
+model.save_weights('model_weights_had_lstm_logo.h5')
+np.save('groundTruth_had_lstm_logo.npy',np.expand_dims(testY,1))
+np.save('testData_had_lstm_logo.npy',np.expand_dims(testX,1))
 
 ## write to JSON, in case you wanrt to work with that data format later when inspecting your model
 with open('./data/model_had_logo.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 ## write cvscores to file
-with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'w') as cvs_file:
+with open('train_history/cvscores_convlstm_logo.txt', 'w') as cvs_file:
     cvs_file.write('%.2f%% (+/- %.2f%%)' % (np.mean(cvscores), np.std(cvscores)))
 ```
 
@@ -907,46 +1003,391 @@ with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'w') as cvs_file:
     time_distributed_3
     dense_3
     (58134, 90, 6, 1)
-
-
-
-    ---------------------------------------------------------------------------
-
-    ValueError                                Traceback (most recent call last)
-
-    <ipython-input-20-b1298f6d9bcf> in <module>()
-         24 
-         25     ## fit the model
-    ---> 26     history = model.fit(np.expand_dims(trainX,1),np.expand_dims(trainY,1), validation_data=(testX,testY), epochs=Epochs,batch_size=batchSize,verbose=2)
-         27 
-         28 #     ## save the model histories (NOTE: neither pickle nor dill seem to serialize!)
-
-
-    /usr/local/lib/python3.6/dist-packages/keras/engine/training.py in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)
-        968                 val_x, val_y,
-        969                 sample_weight=val_sample_weight,
-    --> 970                 batch_size=batch_size)
-        971             if self._uses_dynamic_learning_phase():
-        972                 val_ins = val_x + val_y + val_sample_weights + [0.]
-
-
-    /usr/local/lib/python3.6/dist-packages/keras/engine/training.py in _standardize_user_data(self, x, y, sample_weight, class_weight, check_array_lengths, batch_size)
-        747             feed_input_shapes,
-        748             check_batch_axis=False,  # Don't enforce the batch size.
-    --> 749             exception_prefix='input')
-        750 
-        751         if y is not None:
-
-
-    /usr/local/lib/python3.6/dist-packages/keras/engine/training_utils.py in standardize_input_data(data, names, shapes, check_batch_axis, exception_prefix)
-        125                         ': expected ' + names[i] + ' to have ' +
-        126                         str(len(shape)) + ' dimensions, but got array '
-    --> 127                         'with shape ' + str(data_shape))
-        128                 if not check_batch_axis:
-        129                     data_shape = data_shape[1:]
-
-
-    ValueError: Error when checking input: expected conv_lst_m2d_1_input to have 5 dimensions, but got array with shape (4342, 90, 6, 1)
+    Train on 58134 samples, validate on 4342 samples
+    Epoch 1/2
+     - 63s - loss: 0.6747 - acc: 0.7545 - val_loss: 0.7456 - val_acc: 0.7096
+    Epoch 2/2
+     - 61s - loss: 0.4439 - acc: 0.8320 - val_loss: 0.7153 - val_acc: 0.7446
+    acc: 74.46%
+    Baseline ConvLSTM Error: 25.54%
+    Training on fold 2/14...
+    sequential_2
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_2
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_2
+    conv_lst_m2d_2
+    time_distributed_4
+    dropout_2
+    time_distributed_5
+    dense_4
+    dense_5
+    time_distributed_6
+    dense_6
+    (56936, 90, 6, 1)
+    Train on 56936 samples, validate on 5540 samples
+    Epoch 1/2
+     - 62s - loss: 0.7109 - acc: 0.7441 - val_loss: 0.6002 - val_acc: 0.7836
+    Epoch 2/2
+     - 60s - loss: 0.4563 - acc: 0.8248 - val_loss: 0.6338 - val_acc: 0.7720
+    acc: 77.20%
+    Baseline ConvLSTM Error: 22.80%
+    Training on fold 3/14...
+    sequential_3
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_3
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_3
+    conv_lst_m2d_3
+    time_distributed_7
+    dropout_3
+    time_distributed_8
+    dense_7
+    dense_8
+    time_distributed_9
+    dense_9
+    (56630, 90, 6, 1)
+    Train on 56630 samples, validate on 5846 samples
+    Epoch 1/2
+     - 62s - loss: 0.6655 - acc: 0.7564 - val_loss: 1.0505 - val_acc: 0.6257
+    Epoch 2/2
+     - 61s - loss: 0.4238 - acc: 0.8358 - val_loss: 1.1900 - val_acc: 0.5835
+    acc: 58.35%
+    Baseline ConvLSTM Error: 41.65%
+    Training on fold 4/14...
+    sequential_4
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_4
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_4
+    conv_lst_m2d_4
+    time_distributed_10
+    dropout_4
+    time_distributed_11
+    dense_10
+    dense_11
+    time_distributed_12
+    dense_12
+    (56494, 90, 6, 1)
+    Train on 56494 samples, validate on 5982 samples
+    Epoch 1/2
+     - 62s - loss: 0.6788 - acc: 0.7518 - val_loss: 1.1870 - val_acc: 0.5911
+    Epoch 2/2
+     - 60s - loss: 0.4283 - acc: 0.8360 - val_loss: 1.0022 - val_acc: 0.6561
+    acc: 65.61%
+    Baseline ConvLSTM Error: 34.39%
+    Training on fold 5/14...
+    sequential_5
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_5
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_5
+    conv_lst_m2d_5
+    time_distributed_13
+    dropout_5
+    time_distributed_14
+    dense_13
+    dense_14
+    time_distributed_15
+    dense_15
+    (56778, 90, 6, 1)
+    Train on 56778 samples, validate on 5698 samples
+    Epoch 1/2
+     - 62s - loss: 0.6843 - acc: 0.7515 - val_loss: 1.2464 - val_acc: 0.6016
+    Epoch 2/2
+     - 61s - loss: 0.4354 - acc: 0.8323 - val_loss: 1.0443 - val_acc: 0.6504
+    acc: 65.04%
+    Baseline ConvLSTM Error: 34.96%
+    Training on fold 6/14...
+    sequential_6
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_6
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_6
+    conv_lst_m2d_6
+    time_distributed_16
+    dropout_6
+    time_distributed_17
+    dense_16
+    dense_17
+    time_distributed_18
+    dense_18
+    (57808, 90, 6, 1)
+    Train on 57808 samples, validate on 4668 samples
+    Epoch 1/2
+     - 63s - loss: 0.6587 - acc: 0.7621 - val_loss: 1.6921 - val_acc: 0.4801
+    Epoch 2/2
+     - 62s - loss: 0.4156 - acc: 0.8415 - val_loss: 1.6553 - val_acc: 0.4677
+    acc: 46.77%
+    Baseline ConvLSTM Error: 53.23%
+    Training on fold 7/14...
+    sequential_7
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_7
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_7
+    conv_lst_m2d_7
+    time_distributed_19
+    dropout_7
+    time_distributed_20
+    dense_19
+    dense_20
+    time_distributed_21
+    dense_21
+    (58651, 90, 6, 1)
+    Train on 58651 samples, validate on 3825 samples
+    Epoch 1/2
+     - 64s - loss: 0.6840 - acc: 0.7529 - val_loss: 1.0710 - val_acc: 0.6711
+    Epoch 2/2
+     - 62s - loss: 0.4384 - acc: 0.8336 - val_loss: 1.2846 - val_acc: 0.7061
+    acc: 70.61%
+    Baseline ConvLSTM Error: 29.39%
+    Training on fold 8/14...
+    sequential_8
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_8
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_8
+    conv_lst_m2d_8
+    time_distributed_22
+    dropout_8
+    time_distributed_23
+    dense_22
+    dense_23
+    time_distributed_24
+    dense_24
+    (59451, 90, 6, 1)
+    Train on 59451 samples, validate on 3025 samples
+    Epoch 1/2
+     - 65s - loss: 0.6806 - acc: 0.7517 - val_loss: 0.4183 - val_acc: 0.8248
+    Epoch 2/2
+     - 63s - loss: 0.4450 - acc: 0.8314 - val_loss: 0.5148 - val_acc: 0.7931
+    acc: 79.31%
+    Baseline ConvLSTM Error: 20.69%
+    Training on fold 9/14...
+    sequential_9
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_9
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_9
+    conv_lst_m2d_9
+    time_distributed_25
+    dropout_9
+    time_distributed_26
+    dense_25
+    dense_26
+    time_distributed_27
+    dense_27
+    (58944, 90, 6, 1)
+    Train on 58944 samples, validate on 3532 samples
+    Epoch 1/2
+     - 65s - loss: 0.6868 - acc: 0.7518 - val_loss: 0.5938 - val_acc: 0.7794
+    Epoch 2/2
+     - 63s - loss: 0.4293 - acc: 0.8377 - val_loss: 0.7266 - val_acc: 0.7650
+    acc: 76.50%
+    Baseline ConvLSTM Error: 23.50%
+    Training on fold 10/14...
+    sequential_10
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_10
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_10
+    conv_lst_m2d_10
+    time_distributed_28
+    dropout_10
+    time_distributed_29
+    dense_28
+    dense_29
+    time_distributed_30
+    dense_30
+    (59367, 90, 6, 1)
+    Train on 59367 samples, validate on 3109 samples
+    Epoch 1/2
+     - 65s - loss: 0.7131 - acc: 0.7432 - val_loss: 0.5084 - val_acc: 0.7970
+    Epoch 2/2
+     - 63s - loss: 0.4491 - acc: 0.8306 - val_loss: 0.6141 - val_acc: 0.7810
+    acc: 78.10%
+    Baseline ConvLSTM Error: 21.90%
+    Training on fold 11/14...
+    sequential_11
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_11
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_11
+    conv_lst_m2d_11
+    time_distributed_31
+    dropout_11
+    time_distributed_32
+    dense_31
+    dense_32
+    time_distributed_33
+    dense_33
+    (58948, 90, 6, 1)
+    Train on 58948 samples, validate on 3528 samples
+    Epoch 1/2
+     - 65s - loss: 0.6745 - acc: 0.7529 - val_loss: 0.6964 - val_acc: 0.7228
+    Epoch 2/2
+     - 63s - loss: 0.4398 - acc: 0.8300 - val_loss: 0.9583 - val_acc: 0.7010
+    acc: 70.10%
+    Baseline ConvLSTM Error: 29.90%
+    Training on fold 12/14...
+    sequential_12
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_12
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_12
+    conv_lst_m2d_12
+    time_distributed_34
+    dropout_12
+    time_distributed_35
+    dense_34
+    dense_35
+    time_distributed_36
+    dense_36
+    (59485, 90, 6, 1)
+    Train on 59485 samples, validate on 2991 samples
+    Epoch 1/2
+     - 66s - loss: 0.6985 - acc: 0.7447 - val_loss: 0.5887 - val_acc: 0.7733
+    Epoch 2/2
+     - 63s - loss: 0.4520 - acc: 0.8295 - val_loss: 0.5621 - val_acc: 0.7997
+    acc: 79.97%
+    Baseline ConvLSTM Error: 20.03%
+    Training on fold 13/14...
+    sequential_13
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_13
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_13
+    conv_lst_m2d_13
+    time_distributed_37
+    dropout_13
+    time_distributed_38
+    dense_37
+    dense_38
+    time_distributed_39
+    dense_39
+    (57880, 90, 6, 1)
+    Train on 57880 samples, validate on 4596 samples
+    Epoch 1/2
+     - 65s - loss: 0.6517 - acc: 0.7622 - val_loss: 1.2508 - val_acc: 0.6586
+    Epoch 2/2
+     - 62s - loss: 0.4320 - acc: 0.8344 - val_loss: 1.2255 - val_acc: 0.6732
+    acc: 67.32%
+    Baseline ConvLSTM Error: 32.68%
+    Training on fold 14/14...
+    sequential_14
+    (None, None, 90, 6, 1)
+    (None, None, 90, 6, 128)
+    sequential_14
+    (None, None, 45, 3, 128)
+    (None, None, 45, 3, 128)
+    (None, None, 17280)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 128)
+    (None, None, 12)
+    sequential_14
+    conv_lst_m2d_14
+    time_distributed_40
+    dropout_14
+    time_distributed_41
+    dense_40
+    dense_41
+    time_distributed_42
+    dense_42
+    (56682, 90, 6, 1)
+    Train on 56682 samples, validate on 5794 samples
+    Epoch 1/2
+     - 64s - loss: 0.6974 - acc: 0.7432 - val_loss: 0.4632 - val_acc: 0.8293
+    Epoch 2/2
+     - 62s - loss: 0.4450 - acc: 0.8306 - val_loss: 0.4020 - val_acc: 0.8366
+    acc: 83.66%
+    Baseline ConvLSTM Error: 16.34%
+    70.93% (+/- 9.51%)
 
 
 
@@ -955,32 +1396,18 @@ with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'w') as cvs_file:
 # print(testX[[1]].shape)
 ```
 
-
-```python
-## DEPREC: reshape your data for ConvLSTM model input
-
-# trainX = np.expand_dims(trainX,0)
-# testX = np.expand_dims(testX,0)
-
-# trainY = np.expand_dims(trainY,0)
-# testY = np.expand_dims(testY,0)
-
-## test reshape for ConvLSTM
-# print(np.expand_dims(testY,1).shape)
-# print(trainX.shape)
-
-# print(trainX.reshape((None,50094, 90, 6, 1)))
-```
-
 ### Evaluate model, and plot confusion matrix + acc/loss graphs
 
 
 ```python
 ## the acc of our combined 'logo' models is 71.74%!
-with open('./trainHistoryDict/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
+with open('./train_history/cvscores_convlstm_logo.txt', 'r') as cvs_scores:
     cvs = cvs_scores.read()
 print(cvs)
 ```
+
+    70.93% (+/- 9.51%)
+
 
 
 ```python
@@ -1006,7 +1433,7 @@ def plot_cm(cM, labels,title):
     ## normalizing the confusionMatrix for showing the probabilities
     cmNormalized = np.around((cM/cM.astype(np.float).sum(axis=1)[:,None])*100,2)
     ## creating a figure object
-    fig = plt.figure()
+    fig = plt.figure(figsize=(15,15))
     ## plotting the confusion matrix
     plt.imshow(cmNormalized,interpolation='bilinear',cmap = plt.cm.Purples)
     ## creating a color bar and setting the limits
@@ -1035,10 +1462,7 @@ def plot_cm(cM, labels,title):
     ## making sure that the figure is not clipped
     plt.tight_layout()
     plt.grid('off')
-#     ## turn off white grid lines
-#     plt.grid(False)
-#     ax.grid(False)
-    ## saving the figure
+    ## save the figure
     fig.savefig(title +'.png')
     
 ## loading the pretrained model
@@ -1081,11 +1505,69 @@ cm = metrics.confusion_matrix(groundTruthClass,predictedClass)
 print(cm)
 
 ## plotting the confusion matrix
-plot_cm(cm, labels,'./plots/confusion_matrix_90_logo')
+plot_cm(cm, labels,'Confusion Matrix (90 n_steps, LoGo)')
 
 print(model.summary())
 
 ```
+
+    Loaded model from disk
+    acc: 78.81%
+    Baseline Error: 21.19%
+    [[ 57 174   0   1  64   0  47   0   0   1   0   0]
+     [ 54 213   1   0  24   0  47   1   2   0   1   1]
+     [  0   0 163  14   0   0   0   3   1   0   0   2]
+     [  0   0   1 322   0   0   1   1   2   0   0   4]
+     [ 41  57   0   0 127   0 131   0   0   0   0   0]
+     [  0   0   0   0   0 555   0   0   0   0   1   0]
+     [  3   0   6   0  21   0 186   4  75   0   3  13]
+     [  0   0  63   1   0   0   1 464  54  66   0  48]
+     [  0   0   0   0   0   0   2   3 871  28  39   1]
+     [  0   0   0   0   0   0   2   4  51 439   4   0]
+     [  0   0   0   0   0   0   3   0  21   0 435   2]
+     [  0   0   0   0   0   0   2   3  21   0   7 734]]
+    Accuracy for each class is given below.
+    WalkForward : 16.57 %
+    WalkLeft    : 61.92 %
+    WalkRight   : 89.07 %
+    WalkUp      : 97.28 %
+    WalkDown    : 35.67 %
+    RunForward  : 99.82 %
+    JumpUp      : 59.81 %
+    Sit         : 66.57 %
+    Stand       : 92.27 %
+    Sleep       : 87.8 %
+    ElevatorUp  : 94.36 %
+    ElevatorDown: 95.7 %
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    conv_lst_m2d_14 (ConvLSTM2D) (None, None, 90, 6, 128)  264704    
+    _________________________________________________________________
+    time_distributed_40 (TimeDis (None, None, 45, 3, 128)  0         
+    _________________________________________________________________
+    dropout_14 (Dropout)         (None, None, 45, 3, 128)  0         
+    _________________________________________________________________
+    time_distributed_41 (TimeDis (None, None, 17280)       0         
+    _________________________________________________________________
+    dense_40 (Dense)             (None, None, 128)         2211968   
+    _________________________________________________________________
+    dense_41 (Dense)             (None, None, 128)         16512     
+    _________________________________________________________________
+    time_distributed_42 (TimeDis (None, None, 128)         0         
+    _________________________________________________________________
+    dense_42 (Dense)             (None, None, 12)          1548      
+    =================================================================
+    Total params: 2,494,732
+    Trainable params: 2,494,732
+    Non-trainable params: 0
+    _________________________________________________________________
+    None
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_30_1.png)
+
 
 
 ```python
@@ -1116,6 +1598,21 @@ plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
 plt.savefig('./plots/loss_plot_logo.pdf', bbox_inches='tight')
 ```
+
+    ['acc', 'loss', 'val_acc', 'val_loss']
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_31_2.png)
+
+
+
+    <matplotlib.figure.Figure at 0x1286c4450>
+
 
 
 ```python
@@ -1158,7 +1655,7 @@ K.clear_session()
 
 ## this was created with @warptime's help. Thank you!
 
-saved_model_path = './tensorflow_pb_models/model_hcd.h5'
+saved_model_path = './data/model_had_lstm_logo.h5'
 
 model = load_model(saved_model_path)
 nb_classes = 1 ## The number of output nodes in the model
@@ -1177,7 +1674,7 @@ sess = K.get_session()
 output_fld = 'tensorflow_pb_models/'
 if not os.path.isdir(output_fld):
     os.mkdir(output_fld)
-output_graph_name = saved_model_path + '.pb'
+output_graph_name = 'model_had_lstm_logo' + '.pb'
 output_graph_suffix = '_inference'
 
 constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
@@ -1185,13 +1682,124 @@ graph_io.write_graph(constant_graph, output_fld, output_graph_name, as_text=Fals
 print('saved the constant graph (ready for inference) at: ', osp.join(output_fld, output_graph_name))
 ```
 
+    output nodes names are:  ['output_node0']
+    INFO:tensorflow:Froze 10 variables.
+    INFO:tensorflow:Converted 10 variables to const ops.
+    saved the constant graph (ready for inference) at:  tensorflow_pb_models/model_had_lstm_logo.pb
+
+
 
 ```python
 ## Method 1 inspect output
 
-print_graph_nodes('./tensorflow_pb_models/model_ucd.h5.pb')
+print_graph_nodes('./tensorflow_pb_models/model_had_lstm_logo.pb')
 # print_graph_nodes('./graph_test/output_graph.pb')
 ```
+
+    
+    ./tensorflow_pb_models/model_had_lstm_logo.pb
+    =======================INPUT=========================
+    [name: "keras_learning_phase/input"
+    op: "Const"
+    attr {
+      key: "dtype"
+      value {
+        type: DT_BOOL
+      }
+    }
+    attr {
+      key: "value"
+      value {
+        tensor {
+          dtype: DT_BOOL
+          tensor_shape {
+          }
+          bool_val: false
+        }
+      }
+    }
+    , name: "conv_lst_m2d_14_input"
+    op: "Placeholder"
+    attr {
+      key: "dtype"
+      value {
+        type: DT_FLOAT
+      }
+    }
+    attr {
+      key: "shape"
+      value {
+        shape {
+          dim {
+            size: -1
+          }
+          dim {
+            size: -1
+          }
+          dim {
+            size: 90
+          }
+          dim {
+            size: 6
+          }
+          dim {
+            size: 1
+          }
+        }
+      }
+    }
+    ]
+    =======================OUTPUT========================
+    [name: "output_node0"
+    op: "Identity"
+    input: "strided_slice"
+    attr {
+      key: "T"
+      value {
+        type: DT_FLOAT
+      }
+    }
+    ]
+    ===================KERAS_LEARNING=====================
+    [name: "keras_learning_phase/input"
+    op: "Const"
+    attr {
+      key: "dtype"
+      value {
+        type: DT_BOOL
+      }
+    }
+    attr {
+      key: "value"
+      value {
+        tensor {
+          dtype: DT_BOOL
+          tensor_shape {
+          }
+          bool_val: false
+        }
+      }
+    }
+    , name: "keras_learning_phase"
+    op: "PlaceholderWithDefault"
+    input: "keras_learning_phase/input"
+    attr {
+      key: "dtype"
+      value {
+        type: DT_BOOL
+      }
+    }
+    attr {
+      key: "shape"
+      value {
+        shape {
+        }
+      }
+    }
+    ]
+    ======================================================
+    
+
 
 
 ```python
@@ -1452,6 +2060,44 @@ plt.plot(usc_sit_df_gyr_z)
 plt.show()
 ```
 
+    sitting mean usc-had acc_x: 0.8275517870451022
+    sitting std usc-had acc_x: 0.08702539053000118
+    sitting mean usc-had acc_y: 0.47151391545812116
+    sitting std usc-had acc_y: 0.1771941735702898
+    sitting mean usc-had acc_z: 0.19264190885658336
+    sitting std usc-had acc_z: 0.17058384939588664
+    sitting mean usc-had gyr_x: 0.19264190885658336
+    sitting std usc-had gyr_x: 0.17058384939588664
+    sitting mean usc-had gyr_y: 0.19264190885658336
+    sitting std usc-had gyr_y: 3.505542665706356
+    sitting mean usc-had gyr_z: 0.09090915439847408
+    sitting std usc-had gyr_z: 4.136471407581966
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_2.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_3.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_4.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_5.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_52_6.png)
+
+
 
 ```python
 ## Android sensor reading samples inspect
@@ -1500,3 +2146,42 @@ plt.show()
 plt.plot(sit_gyr_z)
 plt.show()
 ```
+
+    sitting android acc_x size: 300
+    sitting mean android acc_x: 5.795021454333334
+    sitting std android acc_x: 0.1546386070887035
+    sitting mean android acc_y: 3.5278160356666666
+    sitting std android acc_y: 0.35885386975185224
+    sitting mean android acc_z: 7.550522920333333
+    sitting std android acc_z: 0.2383939497187787
+    sitting mean android gyr_x: -0.019029214404346663
+    sitting std android gyr_x: 0.07544860409278752
+    sitting mean android gyr_y: -0.008958773748733334
+    sitting std android gyr_y: 0.04664604581057123
+    sitting mean android gyr_z: -0.020935697682131
+    sitting std android gyr_z: 0.07335605288544335
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_1.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_2.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_3.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_4.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_5.png)
+
+
+
+![png](mobilehci2018_keras_har_tutorial_files/mobilehci2018_keras_har_tutorial_53_6.png)
+
