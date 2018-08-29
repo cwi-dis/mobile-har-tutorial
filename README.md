@@ -1353,7 +1353,7 @@ def plot_cm(cM, labels,title):
     ## normalizing the confusionMatrix for showing the probabilities
     cmNormalized = np.around((cM/cM.astype(np.float).sum(axis=1)[:,None])*100,2)
     ## creating a figure object
-    fig = plt.figure(figsize=(15,15))
+    fig = plt.figure(figsize=(10,10))
     ## plotting the confusion matrix
     plt.imshow(cmNormalized,interpolation='bilinear',cmap = plt.cm.Purples)
     ## creating a color bar and setting the limits
@@ -1362,7 +1362,7 @@ def plot_cm(cM, labels,title):
     ## assiging the title, x and y labels
     plt.xlabel('Predicted Values')
     plt.ylabel('Ground Truth')
-    plt.title(title + '\n%age confidence')
+    plt.title(title + '')
     ## defining the ticks for the x and y axis
     plt.xticks(range(len(labels)),labels,rotation = 60)
     plt.yticks(range(len(labels)),labels)
@@ -1431,6 +1431,7 @@ print(model.summary())
 
 ```
 
+    WARNING:tensorflow:Variable *= will be deprecated. Use variable.assign_mul if you want assignment to the variable value or 'x = x * y' if you want a new python Tensor object.
     Loaded model from disk
     acc: 78.81%
     Baseline Error: 21.19%
@@ -1447,18 +1448,18 @@ print(model.summary())
      [  0   0   0   0   0   0   3   0  21   0 435   2]
      [  0   0   0   0   0   0   2   3  21   0   7 734]]
     Accuracy for each class is given below.
-    WalkForward : 16.57 %
-    WalkLeft    : 61.92 %
-    WalkRight   : 89.07 %
-    WalkUp      : 97.28 %
-    WalkDown    : 35.67 %
-    RunForward  : 99.82 %
-    JumpUp      : 59.81 %
-    Sit         : 66.57 %
-    Stand       : 92.27 %
-    Sleep       : 87.8 %
-    ElevatorUp  : 94.36 %
-    ElevatorDown: 95.7 %
+    ('WalkForward :', 16.57, '%')
+    ('WalkLeft    :', 61.92, '%')
+    ('WalkRight   :', 89.07, '%')
+    ('WalkUp      :', 97.28, '%')
+    ('WalkDown    :', 35.67, '%')
+    ('RunForward  :', 99.82, '%')
+    ('JumpUp      :', 59.81, '%')
+    ('Sit         :', 66.57, '%')
+    ('Stand       :', 92.27, '%')
+    ('Sleep       :', 87.8, '%')
+    ('ElevatorUp  :', 94.36, '%')
+    ('ElevatorDown:', 95.7, '%')
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
