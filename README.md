@@ -102,7 +102,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 64144 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 64402 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
@@ -366,6 +366,9 @@ df.loc[df['activity'] == '9', 'activity'] = 'Standing'
 df.loc[df['activity'] == '10', 'activity'] = 'Sleeping'
 df.loc[df['activity'] == '11', 'activity'] = 'Elevator Up'
 df.loc[df['activity'] == '12', 'activity'] = 'Elevator Down'
+
+## pickle the df 
+df.to_pickle('data/df.pkl')
 
 ## these are the 12 classes we want to recognize!
 df['activity'].unique() 
@@ -696,6 +699,9 @@ print(df['activity'].value_counts())
 
 
 ```python
+## if you want to just read your saved df
+# df = pd.read_pickle('data/df.pkl')
+
 ## UNCOMMENT below line for segmenting the signal in overlapping windows of 90 samples with 50% overlap
 # segments, labels, subjects = segment_signal(df)
 
