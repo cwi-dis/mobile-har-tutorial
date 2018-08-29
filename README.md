@@ -102,7 +102,7 @@ K.clear_session()
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
     [NbConvertApp] Making directory mobilehci2018_keras_har_tutorial_files
-    [NbConvertApp] Writing 75168 bytes to mobilehci2018_keras_har_tutorial.md
+    [NbConvertApp] Writing 64144 bytes to mobilehci2018_keras_har_tutorial.md
 
 
 
